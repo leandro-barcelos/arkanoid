@@ -1,48 +1,74 @@
 package com.poo.arkanoid;
 
 import com.badlogic.gdx.ApplicationAdapter;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.ScreenUtils;
-import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
+
+import java.util.Objects;
 
 public class Arkanoid extends ApplicationAdapter {
 	SpriteBatch batch;
-	Texture img;
-        Texture vausImage;
-        Vaus vaus;
+    OrthographicCamera camera;
+	Texture background;
+    Texture vausImage;
+    Vaus vaus;
+
+    int centroTela = 207;
+
+    boolean enlarge = false;
+    boolean shrink = false;
 	
 	@Override
 	public void create () {
+        camera = new OrthographicCamera();
+        camera.setToOrtho(false, 512, 480);
 		batch = new SpriteBatch();
-		img = new Texture("backgroud-blue.png");
-                vausImage = new Texture("prop-bar-normal.png");
-                
-                vaus = new Vaus();
-                vaus.x = (512-98)/2 - 64/2;
-                vaus.y = 56 - 7;
-                vaus.width = 64;
-                vaus.height = 14;
+		background = new Texture("backgroud-blue.png");
+        vaus = new Vaus(centroTela, 49, 64, 14);
+
 	}
 
 	@Override
 	public void render () {
 		ScreenUtils.clear(1, 0, 0, 1);
+        camera.update();
+        batch.setProjectionMatrix(camera.combined);
 		batch.begin();
-		batch.draw(img, 0, 0, 512, 480);
-                batch.draw(vausImage, vaus.x, vaus.y, vaus.width, vaus.height);
-                
-                vaus.Mover();
+		batch.draw(background, 0, 0, 512, 480);
+        vaus.draw(batch);
 
-                
-		batch.end();
+        vaus.Mover();
+
+
+
+        if(Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
+            enlarge = true;
+            shrink = false;
+        }
+        if(Gdx.input.isKeyPressed(Input.Keys.BACKSPACE)) {
+            shrink = true;
+            enlarge = false;
+        }
+
+        if (enlarge) {
+            vaus.lazerMode(batch);
+        }
+
+        if (shrink) vaus.lazerToNormal(batch);
+
+        batch.end();
+
+
 	}
 	
 	@Override
 	public void dispose () {
 		batch.dispose();
-		img.dispose();
+		background.dispose();
+        vaus.dispose();
 	}
 }
