@@ -9,8 +9,11 @@ public abstract class Prop {
     private float height;
     private float width;
     private Texture textura;
+    private Boolean animationActive;
+    private String modo;
+    private float stateTime;
 
-    public Prop(int x, int y, int width, int height) {
+    public Prop(float x, float y, float width, float height) {
         this.x = x;
         this.y = y;
         this.height = height;
@@ -18,6 +21,7 @@ public abstract class Prop {
     }
 
     abstract void draw(SpriteBatch batch);
+    abstract void changeMode(SpriteBatch batch, String toMode);
     abstract void dispose();
 
     public float getX() {
@@ -58,5 +62,29 @@ public abstract class Prop {
 
     public void setTextura(Texture textura) {
         this.textura = textura;
+    }
+
+    public Boolean getAnimationActive() {
+        return animationActive;
+    }
+
+    public void setAnimationActive(Boolean animationActive) {
+        this.animationActive = animationActive;
+    }
+
+    public String getModo() {
+        return modo;
+    }
+
+    public void setModo(String modo) {
+        this.modo = modo;
+    }
+
+    public float getStateTime() {
+        return stateTime;
+    }
+
+    public void setStateTime(float stateTime) {
+        this.stateTime = stateTime;
     }
 }

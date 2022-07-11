@@ -10,41 +10,39 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import java.util.Objects;
 
 
-public class Vaus extends Prop{
-    private final Texture imgNormal, imgLazer, imgGrande, enlargeSheet, lazerSheet;
+public class Vaus extends Prop {
+    private final Texture imgNormal, imgLazer, imgLarge, enlargeSheet, lazerSheet;
     private final Animation<TextureRegion> enlargeAnimation, shrinkAnimation, lazerAnimation, delazerAnimation;
-    private String habilidade;
-    private Boolean animationActive;
-    private float stateTime;
-    
+
     public Vaus(int x, int y, int width, int height) {
 
-        super(x,y,width,height);
+        super(x, y, width, height);
 
         // CARREGAR TEXTURAS
-        imgNormal = new Texture("prop-bar-normal.png");
-        imgLazer = new Texture("prop-bar-lazer.png");
-        imgGrande = new Texture("prop-bar-enlarged.png");
-
-        enlargeSheet = new Texture("prop-bar-enlarging-spritesheet.png");
-        lazerSheet = new Texture("prop-bar-lazer-spritesheet.png");
+        imgNormal = new Texture("vaus-normal.png");
+        imgLazer = new Texture("vaus-lazer.png");
+        imgLarge = new Texture("vaus-large.png");
 
         // CARREGAR ANIMACOES
-        TextureRegion[][] tmp = TextureRegion.split(enlargeSheet,
-                enlargeSheet.getWidth() / 4,
-                enlargeSheet.getHeight());
+        enlargeSheet = new Texture("vaus-large-spritesheet.png");
+        lazerSheet = new Texture("vaus-lazer-spritesheet.png");
 
-        TextureRegion[] enlargeFrames = new TextureRegion[4];
+
+        TextureRegion[][] tmp = TextureRegion.split(enlargeSheet,
+                enlargeSheet.getWidth(),
+                enlargeSheet.getHeight() / 6);
+
+        TextureRegion[] enlargeFrames = new TextureRegion[6];
         int index = 0;
-        for (int i = 0; i < 1; i++) {
-            for (int j = 0; j < 4; j++) {
+        for (int i = 0; i < 6; i++) {
+            for (int j = 0; j < 1; j++) {
                 enlargeFrames[index++] = tmp[i][j];
             }
         }
 
         enlargeAnimation = new Animation<>(0.1f, enlargeFrames);
 
-        TextureRegion[] shrinkFrames = new TextureRegion[4];
+        TextureRegion[] shrinkFrames = new TextureRegion[6];
         for (int i = enlargeFrames.length - 1, j = 0; i >= 0; i--, j++) {
             shrinkFrames[j] = enlargeFrames[i];
         }
@@ -72,105 +70,66 @@ public class Vaus extends Prop{
 
         delazerAnimation = new Animation<>(0.1f, delazerFrames);
 
-        stateTime = 0f;
-        animationActive = false;
+        setStateTime(0f);
+        setAnimationActive(false);
 
-        habilidade = "normal";
+        setModo("normal");
     }
-    
+
     public void Mover() {
-        if(Gdx.input.isKeyPressed(Input.Keys.LEFT)) setX(getX() - 250 * Gdx.graphics.getDeltaTime());
-        if(Gdx.input.isKeyPressed(Input.Keys.RIGHT)) setX(getX() + 250 * Gdx.graphics.getDeltaTime());
+        if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) setX(getX() - 250 * Gdx.graphics.getDeltaTime());
+        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) setX(getX() + 250 * Gdx.graphics.getDeltaTime());
 
-        if(getX() - getWidth() / 2 < 33) setX(33 + getWidth() / 2);
-        if(getX() - getWidth() / 2 > 381 - getWidth()) setX(381 - getWidth() / 2);
+        if (getX() - getWidth() / 2 < 33) setX(33 + getWidth() / 2);
+        if (getX() - getWidth() / 2 > 381 - getWidth()) setX(381 - getWidth() / 2);
     }
 
-    public void enlarge(SpriteBatch batch) {
-        if(Objects.equals(habilidade, "large")) return;
+    @Override
+    public void changeMode(SpriteBatch batch, String toMode) {
+        if (Objects.equals(getModo(), toMode)) return;
 
-        animationActive = true;
-        setWidth(imgGrande.getWidth());
-
-        stateTime += Gdx.graphics.getDeltaTime();
-
-        if (enlargeAnimation.isAnimationFinished(stateTime)) {
-            habilidade = "large";
-            animationActive = false;
-            stateTime = 0f;
+        if (!Objects.equals(toMode, "normal") && !Objects.equals(getModo(), "normal")) {
+            changeMode(batch, "normal");
             return;
         }
 
-        TextureRegion currentFrame = enlargeAnimation.getKeyFrame(stateTime, true);
-        batch.draw(currentFrame, getX() - getWidth() / 2, getY());
-    }
+        Animation<TextureRegion> toModeAnimation = shrinkAnimation;
 
-    public void shrink(SpriteBatch batch) {
-        if(Objects.equals(habilidade, "normal")) return;
+        switch (toMode) {
+            case "normal":
+                if (Objects.equals(getModo(), "lazer")) toModeAnimation = delazerAnimation;
+                break;
+            case "large":
+                setWidth(imgLarge.getWidth());
+                toModeAnimation = enlargeAnimation;
+                break;
+            case "lazer":
+                toModeAnimation = lazerAnimation;
+                break;
+        }
 
-        animationActive = true;
-        setWidth(imgGrande.getWidth());
+        setAnimationActive(true);
 
-        stateTime += Gdx.graphics.getDeltaTime();
+        setStateTime(getStateTime() + Gdx.graphics.getDeltaTime());
 
-        TextureRegion currentFrame = shrinkAnimation.getKeyFrame(stateTime, true);
-
-        if (shrinkAnimation.isAnimationFinished(stateTime)) {
-            habilidade = "normal";
-            animationActive = false;
-            stateTime = 0f;
+        if (enlargeAnimation.isAnimationFinished(getStateTime())) {
+            setModo(toMode);
+            setAnimationActive(false);
+            setStateTime(0f);
             return;
         }
 
+        TextureRegion currentFrame = toModeAnimation.getKeyFrame(getStateTime(), true);
         batch.draw(currentFrame, getX() - getWidth() / 2, getY());
     }
 
-    public void lazerMode(SpriteBatch batch) {
-        if(Objects.equals(habilidade, "lazer")) return;
-
-        animationActive = true;
-        setWidth(imgLazer.getWidth());
-
-        stateTime += Gdx.graphics.getDeltaTime();
-
-        TextureRegion currentFrame = lazerAnimation.getKeyFrame(stateTime, true);
-
-        if (lazerAnimation.isAnimationFinished(stateTime)) {
-            habilidade = "lazer";
-            animationActive = false;
-            stateTime = 0f;
-            return;
-        }
-
-        batch.draw(currentFrame, getX() - getWidth() / 2, getY());
-    }
-
-    public void lazerToNormal(SpriteBatch batch) {
-        if(Objects.equals(habilidade, "normal")) return;
-
-        animationActive = true;
-        setWidth(imgLazer.getWidth());
-
-        stateTime += Gdx.graphics.getDeltaTime();
-
-        TextureRegion currentFrame = delazerAnimation.getKeyFrame(stateTime, true);
-
-        if (delazerAnimation.isAnimationFinished(stateTime)) {
-            habilidade = "normal";
-            animationActive = false;
-            stateTime = 0f;
-            return;
-        }
-
-        batch.draw(currentFrame, getX() - getWidth() / 2, getY());
-    }
-
+    @Override
     public void draw(SpriteBatch batch) {
-        if (animationActive) return;
+        if (getAnimationActive()) return;
 
         setWidth(64);
 
-        switch(habilidade) {
+        switch (getModo()) {
             case "normal":
                 setTextura(imgNormal);
                 break;
@@ -178,7 +137,7 @@ public class Vaus extends Prop{
                 setTextura(imgLazer);
                 break;
             case "large":
-                setTextura(imgGrande);
+                setTextura(imgLarge);
                 break;
         }
 
@@ -186,14 +145,11 @@ public class Vaus extends Prop{
         batch.draw(getTextura(), getX() - getWidth() / 2, getY(), getWidth(), getHeight());
     }
 
+    @Override
     public void dispose() {
         imgNormal.dispose();
         imgLazer.dispose();
-        imgGrande.dispose();
+        imgLarge.dispose();
         enlargeSheet.dispose();
-    }
-
-    public String getHabilidade() {
-        return habilidade;
     }
 }

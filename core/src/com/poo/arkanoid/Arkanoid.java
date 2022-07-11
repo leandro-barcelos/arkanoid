@@ -8,13 +8,10 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.ScreenUtils;
 
-import java.util.Objects;
-
 public class Arkanoid extends ApplicationAdapter {
 	SpriteBatch batch;
     OrthographicCamera camera;
 	Texture background;
-    Texture vausImage;
     Vaus vaus;
 
     int centroTela = 207;
@@ -55,10 +52,10 @@ public class Arkanoid extends ApplicationAdapter {
         }
 
         if (enlarge) {
-            vaus.lazerMode(batch);
+            vaus.changeMode(batch, "large");
         }
 
-        if (shrink) vaus.lazerToNormal(batch);
+        if (shrink) vaus.changeMode(batch, "normal");
 
         batch.end();
 
