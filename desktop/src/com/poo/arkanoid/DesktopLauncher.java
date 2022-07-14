@@ -8,8 +8,8 @@ public class DesktopLauncher {
 	public static void main (String[] arg) {
 		Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
 		config.setWindowedMode(512, 480);
-                config.setResizable(true);
-                config.useVsync(true);
+		config.setResizable(true);
+		config.useVsync(true);
 		new Lwjgl3Application(new Arkanoid(), config);
 	}
 }

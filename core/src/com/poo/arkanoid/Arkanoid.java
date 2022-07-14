@@ -13,6 +13,7 @@ public class Arkanoid extends ApplicationAdapter {
     OrthographicCamera camera;
 	Texture background;
     Vaus vaus;
+    Parede parede;
 
     int centroTela = 207;
 
@@ -26,6 +27,7 @@ public class Arkanoid extends ApplicationAdapter {
 		batch = new SpriteBatch();
 		background = new Texture("backgroud-blue.png");
         vaus = new Vaus(centroTela, 49, 64, 14);
+        parede = new Parede(23,34, 16,46);
 
 	}
 
@@ -37,6 +39,7 @@ public class Arkanoid extends ApplicationAdapter {
 		batch.begin();
 		batch.draw(background, 0, 0, 512, 480);
         vaus.draw(batch);
+        parede.draw(batch);
 
         vaus.Mover();
 
@@ -52,14 +55,12 @@ public class Arkanoid extends ApplicationAdapter {
         }
 
         if (enlarge) {
-            vaus.changeMode(batch, "large");
+            vaus.changeMode(batch, "lazer");
         }
 
         if (shrink) vaus.changeMode(batch, "normal");
 
         batch.end();
-
-
 	}
 	
 	@Override
@@ -67,5 +68,6 @@ public class Arkanoid extends ApplicationAdapter {
 		batch.dispose();
 		background.dispose();
         vaus.dispose();
+        parede.dispose();
 	}
 }

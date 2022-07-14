@@ -10,9 +10,9 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import java.util.Objects;
 
 
-public class Vaus extends Prop {
-    private final Texture imgNormal, imgLazer, imgLarge, enlargeSheet, lazerSheet;
-    private final Animation<TextureRegion> enlargeAnimation, shrinkAnimation, lazerAnimation, delazerAnimation;
+public class Vaus extends Animatable {
+    private final Texture imgNormal, imgLazer, imgLarge;
+    private final Animacao enlargeAnimation, shrinkAnimation, lazerAnimation, delazerAnimation;
 
     public Vaus(int x, int y, int width, int height) {
 
@@ -24,54 +24,11 @@ public class Vaus extends Prop {
         imgLarge = new Texture("vaus-large.png");
 
         // CARREGAR ANIMACOES
-        enlargeSheet = new Texture("vaus-large-spritesheet.png");
-        lazerSheet = new Texture("vaus-lazer-spritesheet.png");
+        enlargeAnimation = new Animacao(new Texture("vaus-large-spritesheet.png"), 6, 1, false);
+        shrinkAnimation = new Animacao(new Texture("vaus-large-spritesheet.png"), 6, 1, true);
 
-
-        TextureRegion[][] tmp = TextureRegion.split(enlargeSheet,
-                enlargeSheet.getWidth(),
-                enlargeSheet.getHeight() / 6);
-
-        TextureRegion[] enlargeFrames = new TextureRegion[6];
-        int index = 0;
-        for (int i = 0; i < 6; i++) {
-            for (int j = 0; j < 1; j++) {
-                enlargeFrames[index++] = tmp[i][j];
-            }
-        }
-
-        enlargeAnimation = new Animation<>(0.1f, enlargeFrames);
-
-        TextureRegion[] shrinkFrames = new TextureRegion[6];
-        for (int i = enlargeFrames.length - 1, j = 0; i >= 0; i--, j++) {
-            shrinkFrames[j] = enlargeFrames[i];
-        }
-
-        shrinkAnimation = new Animation<>(0.1f, shrinkFrames);
-
-        tmp = TextureRegion.split(lazerSheet,
-                lazerSheet.getWidth(),
-                lazerSheet.getHeight() / 8);
-
-        TextureRegion[] lazerFrames = new TextureRegion[8];
-        index = 0;
-        for (int i = 0; i < 8; i++) {
-            for (int j = 0; j < 1; j++) {
-                lazerFrames[index++] = tmp[i][j];
-            }
-        }
-
-        lazerAnimation = new Animation<>(0.1f, lazerFrames);
-
-        TextureRegion[] delazerFrames = new TextureRegion[8];
-        for (int i = lazerFrames.length - 1, j = 0; i >= 0; i--, j++) {
-            delazerFrames[j] = lazerFrames[i];
-        }
-
-        delazerAnimation = new Animation<>(0.1f, delazerFrames);
-
-        setStateTime(0f);
-        setAnimationActive(false);
+        lazerAnimation = new Animacao(new Texture("vaus-lazer-spritesheet.png"),8, 1, false);
+        delazerAnimation = new Animacao(new Texture("vaus-lazer-spritesheet.png"),8, 1, true);
 
         setModo("normal");
     }
@@ -80,8 +37,8 @@ public class Vaus extends Prop {
         if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) setX(getX() - 250 * Gdx.graphics.getDeltaTime());
         if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) setX(getX() + 250 * Gdx.graphics.getDeltaTime());
 
-        if (getX() - getWidth() / 2 < 33) setX(33 + getWidth() / 2);
-        if (getX() - getWidth() / 2 > 381 - getWidth()) setX(381 - getWidth() / 2);
+        if (getX() - getWidth() / 2 < 31) setX(31 + getWidth() / 2);
+        if (getX() - getWidth() / 2 > 383 - getWidth()) setX(383 - getWidth() / 2);
     }
 
     @Override
@@ -93,7 +50,7 @@ public class Vaus extends Prop {
             return;
         }
 
-        Animation<TextureRegion> toModeAnimation = shrinkAnimation;
+        Animacao toModeAnimation = shrinkAnimation;
 
         switch (toMode) {
             case "normal":
@@ -112,14 +69,14 @@ public class Vaus extends Prop {
 
         setStateTime(getStateTime() + Gdx.graphics.getDeltaTime());
 
-        if (enlargeAnimation.isAnimationFinished(getStateTime())) {
+        if (toModeAnimation.animacao.isAnimationFinished(getStateTime())) {
             setModo(toMode);
             setAnimationActive(false);
             setStateTime(0f);
             return;
         }
 
-        TextureRegion currentFrame = toModeAnimation.getKeyFrame(getStateTime(), true);
+        TextureRegion currentFrame = toModeAnimation.animacao.getKeyFrame(getStateTime(), true);
         batch.draw(currentFrame, getX() - getWidth() / 2, getY());
     }
 
@@ -150,6 +107,5 @@ public class Vaus extends Prop {
         imgNormal.dispose();
         imgLazer.dispose();
         imgLarge.dispose();
-        enlargeSheet.dispose();
     }
 }
