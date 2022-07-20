@@ -7,16 +7,25 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
-import java.util.Objects;
-
-
 public class Vaus extends Animatable {
+
+    public vausHabilidade getHabilidade() {
+        return habilidade;
+    }
+
+    public enum vausHabilidade {
+        NORMAL,
+        LARGE,
+        LAZER
+    }
+
+    private vausHabilidade habilidade;
+
     private final Texture imgNormal, imgLazer, imgLarge;
-    private final Animacao enlargeAnimation, shrinkAnimation, lazerAnimation, delazerAnimation;
+    private final Animacao toLargeAnimation, toLazerAnimation;
 
-    public Vaus(int x, int y, int width, int height) {
-
-        super(x, y, width, height);
+    public Vaus(int x, int y, int width, int height, SpriteBatch batch) {
+        super(x, y, width, height, batch);
 
         // CARREGAR TEXTURAS
         imgNormal = new Texture("vaus-normal.png");
@@ -24,13 +33,10 @@ public class Vaus extends Animatable {
         imgLarge = new Texture("vaus-large.png");
 
         // CARREGAR ANIMACOES
-        enlargeAnimation = new Animacao(new Texture("vaus-large-spritesheet.png"), 6, 1, false);
-        shrinkAnimation = new Animacao(new Texture("vaus-large-spritesheet.png"), 6, 1, true);
+        toLargeAnimation = new Animacao(new Texture("vaus-large-spritesheet.png"), 6, 1);
+        toLazerAnimation = new Animacao(new Texture("vaus-lazer-spritesheet.png"),8, 1);
 
-        lazerAnimation = new Animacao(new Texture("vaus-lazer-spritesheet.png"),8, 1, false);
-        delazerAnimation = new Animacao(new Texture("vaus-lazer-spritesheet.png"),8, 1, true);
-
-        setModo("normal");
+        habilidade = vausHabilidade.NORMAL;
     }
 
     public void Mover() {
@@ -41,27 +47,27 @@ public class Vaus extends Animatable {
         if (getX() - getWidth() / 2 > 383 - getWidth()) setX(383 - getWidth() / 2);
     }
 
-    @Override
-    public void changeMode(SpriteBatch batch, String toMode) {
-        if (Objects.equals(getModo(), toMode)) return;
 
-        if (!Objects.equals(toMode, "normal") && !Objects.equals(getModo(), "normal")) {
-            changeMode(batch, "normal");
+    public void changeMode(vausHabilidade toMode) {
+        if (habilidade == toMode) return;
+
+        if (toMode != vausHabilidade.NORMAL  && habilidade != vausHabilidade.NORMAL) {
+            changeMode(vausHabilidade.NORMAL);
             return;
         }
 
-        Animacao toModeAnimation = shrinkAnimation;
+        Animation<TextureRegion> toModeAnimation = toLargeAnimation.backward;
 
         switch (toMode) {
-            case "normal":
-                if (Objects.equals(getModo(), "lazer")) toModeAnimation = delazerAnimation;
+            case NORMAL:
+                if (habilidade == vausHabilidade.LAZER) toModeAnimation = toLazerAnimation.backward;
                 break;
-            case "large":
+            case LARGE:
                 setWidth(imgLarge.getWidth());
-                toModeAnimation = enlargeAnimation;
+                toModeAnimation = toLargeAnimation.foward;
                 break;
-            case "lazer":
-                toModeAnimation = lazerAnimation;
+            case LAZER:
+                toModeAnimation = toLazerAnimation.foward;
                 break;
         }
 
@@ -69,31 +75,31 @@ public class Vaus extends Animatable {
 
         setStateTime(getStateTime() + Gdx.graphics.getDeltaTime());
 
-        if (toModeAnimation.animacao.isAnimationFinished(getStateTime())) {
-            setModo(toMode);
+        if (toModeAnimation.isAnimationFinished(getStateTime())) {
+            habilidade = toMode;
             setAnimationActive(false);
             setStateTime(0f);
             return;
         }
 
-        TextureRegion currentFrame = toModeAnimation.animacao.getKeyFrame(getStateTime(), true);
+        TextureRegion currentFrame = toModeAnimation.getKeyFrame(getStateTime(), true);
         batch.draw(currentFrame, getX() - getWidth() / 2, getY());
     }
 
     @Override
-    public void draw(SpriteBatch batch) {
+    public void draw() {
         if (getAnimationActive()) return;
 
         setWidth(64);
 
-        switch (getModo()) {
-            case "normal":
+        switch (habilidade) {
+            case NORMAL:
                 setTextura(imgNormal);
                 break;
-            case "lazer":
+            case LAZER:
                 setTextura(imgLazer);
                 break;
-            case "large":
+            case LARGE:
                 setTextura(imgLarge);
                 break;
         }

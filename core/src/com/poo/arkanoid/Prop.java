@@ -7,17 +7,18 @@ public abstract class Prop {
     private float x,  y;
     private float height, width;
     private Texture textura;
+    SpriteBatch batch;
 
-    public Prop(float x, float y, float width, float height) {
+    public Prop(float x, float y, float width, float height, SpriteBatch batch) {
         this.x = x;
         this.y = y;
         this.height = height;
         this.width = width;
+        this.batch = batch;
     }
 
-    abstract void draw(SpriteBatch batch);
+    abstract void draw();
     abstract void dispose();
-
     public float getX() {
         return x;
     }
@@ -57,6 +58,5 @@ public abstract class Prop {
     public void setTextura(Texture textura) {
         this.textura = textura;
     }
-
 
 }

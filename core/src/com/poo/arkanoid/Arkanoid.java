@@ -12,13 +12,11 @@ public class Arkanoid extends ApplicationAdapter {
 	SpriteBatch batch;
     OrthographicCamera camera;
 	Texture background;
-    Vaus vaus;
-    Parede parede;
-
-    int centroTela = 207;
 
     boolean enlarge = false;
     boolean shrink = false;
+
+    Level level1;
 	
 	@Override
 	public void create () {
@@ -26,8 +24,7 @@ public class Arkanoid extends ApplicationAdapter {
         camera.setToOrtho(false, 512, 480);
 		batch = new SpriteBatch();
 		background = new Texture("backgroud-blue.png");
-        vaus = new Vaus(centroTela, 49, 64, 14);
-        parede = new Parede(23,34, 16,46);
+        level1 = new Level(1, batch);
 
 	}
 
@@ -38,10 +35,10 @@ public class Arkanoid extends ApplicationAdapter {
         batch.setProjectionMatrix(camera.combined);
 		batch.begin();
 		batch.draw(background, 0, 0, 512, 480);
-        vaus.draw(batch);
-        parede.draw(batch);
-
-        vaus.Mover();
+        level1.vaus.draw();
+        level1.paredeBl.draw();
+        level1.paredeTl.draw();
+        level1.vaus.Mover();
 
 
 
@@ -55,10 +52,10 @@ public class Arkanoid extends ApplicationAdapter {
         }
 
         if (enlarge) {
-            vaus.changeMode(batch, "lazer");
+            level1.paredeBl.mudarEstado(batch, Parede.estadoParede.ABERTA);
         }
 
-        if (shrink) vaus.changeMode(batch, "normal");
+        if (shrink) level1.paredeBl.mudarEstado(batch, Parede.estadoParede.FECHADA);
 
         batch.end();
 	}
@@ -67,7 +64,6 @@ public class Arkanoid extends ApplicationAdapter {
 	public void dispose () {
 		batch.dispose();
 		background.dispose();
-        vaus.dispose();
-        parede.dispose();
+        level1.dispose();
 	}
 }

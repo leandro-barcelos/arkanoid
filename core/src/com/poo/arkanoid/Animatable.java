@@ -4,16 +4,15 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 public abstract class Animatable extends Prop{
     private Boolean animationActive;
-    private String modo;
     private float stateTime;
 
-    public Animatable(float x, float y, float width, float height){
-        super(x,y, width, height);
+
+    public Animatable(float x, float y, float width, float height, SpriteBatch batch){
+        super(x,y, width, height, batch);
         animationActive = false;
+
         stateTime = 0f;
     }
-
-    abstract void changeMode(SpriteBatch batch, String toMode);
 
     public Boolean getAnimationActive() {
         return animationActive;
@@ -21,14 +20,6 @@ public abstract class Animatable extends Prop{
 
     public void setAnimationActive(Boolean animationActive) {
         this.animationActive = animationActive;
-    }
-
-    public String getModo() {
-        return modo;
-    }
-
-    public void setModo(String modo) {
-        this.modo = modo;
     }
 
     public float getStateTime() {
