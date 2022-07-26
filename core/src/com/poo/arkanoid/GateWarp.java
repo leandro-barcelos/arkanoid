@@ -2,16 +2,15 @@ package com.poo.arkanoid;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
-public class ParedeWarp extends Parede{
+public class GateWarp extends Gate {
     Animacao warp;
     float warpStateTime;
 
-    public ParedeWarp(float x, float y, float width, float height, SpriteBatch batch) {
-        super(x, y, width, height, batch);
+    public GateWarp(float x, float y, float width, float height, boolean espelhado, int rotacao, SpriteBatch batch) {
+        super(x, y, width, height, espelhado, rotacao, batch);
         warp = new Animacao(new Texture("wall-warp-spritesheet.png"), 1, 2);
         warpStateTime = 0f;
     }
@@ -20,7 +19,7 @@ public class ParedeWarp extends Parede{
     public void draw() {
         if (getAnimationActive()) return;
 
-        switch(estado) {
+        switch (estado) {
             case FECHADA:
                 setTextura(imgFechada);
                 setWidth(getTextura().getWidth());

@@ -8,62 +8,70 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.ScreenUtils;
 
+import java.io.FileNotFoundException;
+
 public class Arkanoid extends ApplicationAdapter {
-	SpriteBatch batch;
+    int width, height;
+    SpriteBatch batch;
     OrthographicCamera camera;
-	Texture background;
+    Nivel nivel1;
+    TelaInicial startScreen;
+    Player player;
+    boolean startGame;
 
-    boolean enlarge = false;
-    boolean shrink = false;
+    @Override
+    public void create() {
+        width = 640 ;
+        height = 480;
 
-    Level level1;
-	
-	@Override
-	public void create () {
         camera = new OrthographicCamera();
-        camera.setToOrtho(false, 512, 480);
-		batch = new SpriteBatch();
-		background = new Texture("backgroud-blue.png");
-        level1 = new Level(1, batch);
+        camera.setToOrtho(false, width, height);
+        batch = new SpriteBatch();
 
-	}
+        try {
+            player = new Player();
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+        startScreen = new TelaInicial(batch, player.getHighscore());
+        nivel1 = new Nivel(batch, width, height, 4);
 
-	@Override
-	public void render () {
-		ScreenUtils.clear(1, 0, 0, 1);
+        startGame = false;
+    }
+
+    @Override
+    public void render() {
+        ScreenUtils.clear(1, 0, 0, 1);
         camera.update();
         batch.setProjectionMatrix(camera.combined);
-		batch.begin();
-		batch.draw(background, 0, 0, 512, 480);
-        level1.vaus.draw();
-        level1.paredeBl.draw();
-        level1.paredeTl.draw();
-        level1.vaus.Mover();
+        batch.begin();
 
+        startGame = Gdx.input.isKeyPressed(Input.Keys.ENTER) || startGame;
 
-
-        if(Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
-            enlarge = true;
-            shrink = false;
+        if (!startGame) {
+            startScreen.draw();
         }
-        if(Gdx.input.isKeyPressed(Input.Keys.BACKSPACE)) {
-            shrink = true;
-            enlarge = false;
-        }
+        else {
+            nivel1.draw();
 
-        if (enlarge) {
-            level1.paredeBl.mudarEstado(batch, Parede.estadoParede.ABERTA);
-        }
+            nivel1.bola.grudar = !Gdx.input.isKeyPressed(Input.Keys.SPACE) && nivel1.bola.grudar;
 
-        if (shrink) level1.paredeBl.mudarEstado(batch, Parede.estadoParede.FECHADA);
+            if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
+                nivel1.bola.grudar = false;
+            }
+
+            nivel1.colisao();
+
+            nivel1.checarDerrota();
+
+        }
 
         batch.end();
-	}
-	
-	@Override
-	public void dispose () {
-		batch.dispose();
-		background.dispose();
-        level1.dispose();
-	}
+    }
+
+    @Override
+    public void dispose() {
+        batch.dispose();
+        nivel1.dispose();
+    }
 }

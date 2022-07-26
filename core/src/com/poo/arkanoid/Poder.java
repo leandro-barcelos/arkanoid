@@ -5,9 +5,10 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
-public class Poder extends Animatable {
+public class Poder extends Animavel {
 
     Animacao rodar;
+
     public Poder(float x, float y, float width, float height, Texture rodarSpritesheet, SpriteBatch batch) {
         super(x, y, width, height, batch);
 

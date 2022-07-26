@@ -4,10 +4,10 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 public abstract class Prop {
-    private float x,  y;
+    SpriteBatch batch;
+    private float x, y;
     private float height, width;
     private Texture textura;
-    SpriteBatch batch;
 
     public Prop(float x, float y, float width, float height, SpriteBatch batch) {
         this.x = x;
@@ -18,7 +18,9 @@ public abstract class Prop {
     }
 
     abstract void draw();
+
     abstract void dispose();
+
     public float getX() {
         return x;
     }

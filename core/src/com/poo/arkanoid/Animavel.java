@@ -2,13 +2,13 @@ package com.poo.arkanoid;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
-public abstract class Animatable extends Prop{
+public abstract class Animavel extends Prop {
     private Boolean animationActive;
     private float stateTime;
 
 
-    public Animatable(float x, float y, float width, float height, SpriteBatch batch){
-        super(x,y, width, height, batch);
+    public Animavel(float x, float y, float width, float height, SpriteBatch batch) {
+        super(x, y, width, height, batch);
         animationActive = false;
 
         stateTime = 0f;
