@@ -9,6 +9,14 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 public class Gate extends Animavel {
 
+    public boolean isEspelhar() {
+        return espelhar;
+    }
+
+    public int getRotacao() {
+        return rotacao;
+    }
+
     public enum estadoParede {
         ABERTA,
         FECHADA
@@ -26,11 +34,11 @@ public class Gate extends Animavel {
         this.rotacao = rotacao;
 
         // CARREGAR TEXTURAS
-        imgFechada = new Texture("wall-close.png");
-        imgAberta = new Texture("wall-open.png");
+        imgFechada = new Texture("Gates/wall-close.png");
+        imgAberta = new Texture("Gates/wall-open.png");
 
         // CARREGAR ANIMACOES
-        openAnimation = new Animacao(new Texture("wall-open-spritesheet.png"), 1, 8);
+        openAnimation = new Animacao(new Texture("Gates/wall-open-spritesheet.png"), 1, 8);
 
         estado = estadoParede.FECHADA;
 
@@ -51,7 +59,7 @@ public class Gate extends Animavel {
         }
 
         setWidth(getTextura().getWidth());
-        batch.draw(getTextura(), getX() - getWidth() / 2, getY(), getWidth() / 2, getHeight() / 2, getWidth(), getHeight(), 1, 1, rotacao, 0, 0, (int) getWidth(), (int) getHeight(), espelhar, false);
+        batch.draw(getTextura(), getX() - getWidth() / 2, getY() - getHeight() / 2, getWidth() / 2, getHeight() / 2, getWidth(), getHeight(), 1, 1, rotacao, 0, 0, (int) getWidth(), (int) getHeight(), espelhar, false);
     }
 
     public void mudarEstado(SpriteBatch batch, estadoParede paraEstado) {

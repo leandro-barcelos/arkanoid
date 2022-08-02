@@ -23,14 +23,14 @@ public class Vaus extends Animavel {
         super(x, y, width, height, batch);
 
         // CARREGAR TEXTURAS
-        imgNormal = new Texture("vaus-normal.png");
-        imgLazer = new Texture("vaus-lazer.png");
-        imgLarge = new Texture("vaus-large.png");
+        imgNormal = new Texture("Vaus/vaus-normal.png");
+        imgLazer = new Texture("Vaus/vaus-lazer.png");
+        imgLarge = new Texture("Vaus/vaus-large.png");
 
         // CARREGAR ANIMACOES
-        toLargeAnimation = new Animacao(new Texture("vaus-large-spritesheet.png"), 6, 1);
-        toLazerAnimation = new Animacao(new Texture("vaus-lazer-spritesheet.png"), 8, 1);
-        destructionAnimation = new Animacao(new Texture("vaus-break-spritesheet.png"),8, 1);
+        toLargeAnimation = new Animacao(new Texture("Vaus/vaus-large-spritesheet.png"), 6, 1);
+        toLazerAnimation = new Animacao(new Texture("Vaus/vaus-lazer-spritesheet.png"), 8, 1);
+        destructionAnimation = new Animacao(new Texture("Vaus/vaus-break-spritesheet.png"),8, 1);
 
         habilidade = vausHabilidade.NORMAL;
     }
@@ -114,23 +114,25 @@ public class Vaus extends Animavel {
         colidiu = (b.getY() - 1 - (b.getHeight() / 2) <= (getY() + getHeight() / 2) && b.getY() + b.getHeight() / 2 >= (getY() - getHeight() / 2))
                 && (b.getX() >= getX() - (getWidth() / 2) && b.getX() <= getX() + (getWidth() / 2));
         if (colidiu) {
-            if (b.velocidade == 0 ) b.velocidade = 250;
-            else if (b.velocidade < 750) b.velocidade += 10;
+            if (b.getVelocidade() == 0 ) b.setVelocidade(300);
+            else if (b.getVelocidade() < 500) b.setVelocidade(b.getVelocidade() + 2);
+
+            int maxGrau = 70;
 
             float distancia = b.getX() - getX();
-            float intervaloAngulos =  (float) 90 / (getWidth() / 2);
-            float teta = 90f;
+            float intervaloAngulos =  (float) maxGrau / (getWidth() / 2);
+            float teta = maxGrau;
 
             for (int i = (int) -(getWidth() / 2 - 1); i <= (getWidth() / 2); i++) {
                 if (distancia <= i) {
-                    if (i <= 0) teta = (90 - i * intervaloAngulos) - 1;
-                    else teta = (90 + -(i - 1) * intervaloAngulos) + 1;
+                    if (i <= 0) teta = (maxGrau - i * intervaloAngulos) - 1;
+                    else teta = (maxGrau + -(i - 1) * intervaloAngulos) + 1;
                     break;
                 }
             }
 
-            b.setxSpeed((float) (b.velocidade * Math.cos(Math.PI / 180 * teta)));
-            b.setySpeed((float) (b.velocidade * Math.sin(Math.PI / 180 * teta)));
+            b.setxSpeed((float) (b.getVelocidade() * Math.cos(Math.PI / 180 * teta)));
+            b.setySpeed((float) (b.getVelocidade() * Math.sin(Math.PI / 180 * teta)));
         }
     }
 

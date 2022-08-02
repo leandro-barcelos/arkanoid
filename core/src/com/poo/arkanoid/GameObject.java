@@ -3,13 +3,13 @@ package com.poo.arkanoid;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
-public abstract class Prop {
+public abstract class GameObject {
     SpriteBatch batch;
     private float x, y;
     private float height, width;
     private Texture textura;
 
-    public Prop(float x, float y, float width, float height, SpriteBatch batch) {
+    public GameObject(float x, float y, float width, float height, SpriteBatch batch) {
         this.x = x;
         this.y = y;
         this.height = height;

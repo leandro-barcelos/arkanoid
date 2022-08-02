@@ -4,13 +4,13 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
-public class Bola extends Prop{
+public class Bola extends GameObject {
 
     private float xSpeed;
     private float ySpeed;
     boolean grudar;
 
-    int velocidade;
+    private int velocidade;
 
     public Bola(float x, float y, float width, float height, SpriteBatch batch) {
         super(x, y, width, height, batch);
@@ -61,5 +61,13 @@ public class Bola extends Prop{
 
     public void setySpeed(float ySpeed) {
         this.ySpeed = ySpeed;
+    }
+
+    public int getVelocidade() {
+        return velocidade;
+    }
+
+    public void setVelocidade(int velocidade) {
+        this.velocidade = velocidade;
     }
 }

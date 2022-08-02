@@ -2,7 +2,7 @@ package com.poo.arkanoid;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
-public abstract class Animavel extends Prop {
+public abstract class Animavel extends GameObject {
     private Boolean animationActive;
     private float stateTime;
 
