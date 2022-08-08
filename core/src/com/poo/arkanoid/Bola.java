@@ -8,8 +8,7 @@ public class Bola extends GameObject {
 
     private float xSpeed;
     private float ySpeed;
-    boolean grudar;
-
+    private boolean grudar;
     private int velocidade;
 
     public Bola(float x, float y, float width, float height, SpriteBatch batch) {
@@ -30,7 +29,9 @@ public class Bola extends GameObject {
 
     void grudarBarra(Vaus vaus) {
         setX(vaus.getX() + (vaus.getWidth() / 2) - 12);
-        setY(vaus.getY() + (vaus.getHeight() / 2) + getHeight() / 2);
+        setY(vaus.getY() + (vaus.getHeight() / 2) + getHeight() / 2 + 1);
+
+        setVelocidade(250);
     }
 
     public boolean perdeu() {
@@ -39,7 +40,7 @@ public class Bola extends GameObject {
 
     @Override
     void draw() {
-        batch.draw(getTextura(), getX() - getWidth() / 2, getY() - getHeight() / 2, getWidth(), getHeight());
+        getBatch().draw(getTextura(), getX() - getWidth() / 2, getY() - getHeight() / 2, getWidth(), getHeight());
     }
 
     @Override
@@ -69,5 +70,13 @@ public class Bola extends GameObject {
 
     public void setVelocidade(int velocidade) {
         this.velocidade = velocidade;
+    }
+
+    public boolean isGrudar() {
+        return grudar;
+    }
+
+    public void setGrudar(boolean grudar) {
+        this.grudar = grudar;
     }
 }

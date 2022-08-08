@@ -3,11 +3,15 @@ package com.poo.arkanoid;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
+
+import java.util.ArrayList;
 
 public class Vaus extends Animavel {
+
+    public ArrayList<Laser[]> getLasers() {
+        return lasers;
+    }
 
     public enum vausHabilidade {
         NORMAL,
@@ -18,6 +22,8 @@ public class Vaus extends Animavel {
     private final Texture imgNormal, imgLazer, imgLarge;
     private final Animacao toLargeAnimation, toLazerAnimation, destructionAnimation;
     private vausHabilidade habilidade;
+    private final ArrayList<Laser []> lasers;
+    private float cadenciaLaser;
 
     public Vaus(int x, int y, int width, int height, SpriteBatch batch) {
         super(x, y, width, height, batch);
@@ -28,15 +34,38 @@ public class Vaus extends Animavel {
         imgLarge = new Texture("Vaus/vaus-large.png");
 
         // CARREGAR ANIMACOES
-        toLargeAnimation = new Animacao(new Texture("Vaus/vaus-large-spritesheet.png"), 6, 1);
-        toLazerAnimation = new Animacao(new Texture("Vaus/vaus-lazer-spritesheet.png"), 8, 1);
-        destructionAnimation = new Animacao(new Texture("Vaus/vaus-break-spritesheet.png"),8, 1);
+        toLargeAnimation = new Animacao(new Texture("Vaus/vaus-large-spritesheet.png"), 6, 1, 0.75f);
+        toLazerAnimation = new Animacao(new Texture("Vaus/vaus-lazer-spritesheet.png"), 8, 1, 1f);
+        destructionAnimation = new Animacao(new Texture("Vaus/vaus-break-spritesheet.png"),8, 1, 1f);
+        destructionAnimation.ativarForward();
 
         habilidade = vausHabilidade.NORMAL;
+
+        lasers = new ArrayList<>();
+
+        cadenciaLaser = 1f;
     }
 
     public vausHabilidade getHabilidade() {
         return habilidade;
+    }
+
+    public void atirar() {
+        if (getHabilidade() != vausHabilidade.LAZER || getAnimationActive()) return;
+
+        if (cadenciaLaser < 0.33) {
+            cadenciaLaser += Gdx.graphics.getDeltaTime();
+            return;
+        }
+
+
+        Laser []novo = new Laser[2];
+        novo[0] = new Laser(getX() - 27, getY() + getHeight() / 2, getBatch());
+        novo[1] = new Laser(getX() + 27, getY() + getHeight() / 2, getBatch());
+
+        cadenciaLaser = 0;
+
+        lasers.add(novo);
     }
 
     public void Mover(Parede parede) {
@@ -47,6 +76,11 @@ public class Vaus extends Animavel {
             setX(parede.getLimXEsq() + getWidth() / 2);
         if (getX() - getWidth() / 2 > parede.getLimXDir() - getWidth())
             setX(parede.getLimXDir() - getWidth() / 2);
+
+        for (Laser [] i: lasers) {
+            if (i[0] != null) i[0].mover();
+            if (i[1] != null) i[1].mover();
+        }
     }
 
     public void changeMode(vausHabilidade toMode) {
@@ -57,34 +91,27 @@ public class Vaus extends Animavel {
             return;
         }
 
-        Animation<TextureRegion> toModeAnimation = toLargeAnimation.backward;
+        setAnimacao(toLargeAnimation);
+        getAnimacao().ativarBackward();
 
         switch (toMode) {
             case NORMAL:
-                if (habilidade == vausHabilidade.LAZER) toModeAnimation = toLazerAnimation.backward;
+                if (habilidade == vausHabilidade.LAZER) {
+                    setAnimacao(toLazerAnimation);
+                    getAnimacao().ativarBackward();
+                }
                 break;
             case LARGE:
                 setWidth(imgLarge.getWidth());
-                toModeAnimation = toLargeAnimation.foward;
+                getAnimacao().ativarForward();
                 break;
             case LAZER:
-                toModeAnimation = toLazerAnimation.foward;
+                setAnimacao(toLazerAnimation);
+                getAnimacao().ativarForward();
                 break;
         }
 
-        setAnimationActive(true);
-
-        setStateTime(getStateTime() + Gdx.graphics.getDeltaTime());
-
-        if (toModeAnimation.isAnimationFinished(getStateTime())) {
-            habilidade = toMode;
-            setAnimationActive(false);
-            setStateTime(0f);
-            return;
-        }
-
-        TextureRegion currentFrame = toModeAnimation.getKeyFrame(getStateTime(), true);
-        batch.draw(currentFrame, getX() - getWidth() / 2, getY() - getHeight() / 2, getWidth(), getHeight());
+        if (rodarAnimacao()) habilidade = toMode;
     }
 
     @Override
@@ -106,7 +133,7 @@ public class Vaus extends Animavel {
         }
 
         setWidth(getTextura().getWidth());
-        batch.draw(getTextura(), getX() - getWidth() / 2, getY() - getHeight() / 2, getWidth(), getHeight());
+        getBatch().draw(getTextura(), getX() - getWidth() / 2, getY() - getHeight() / 2, getWidth(), getHeight());
     }
 
     void colisao(Bola b) {
@@ -137,19 +164,10 @@ public class Vaus extends Animavel {
     }
 
     void destroy() {
+        setAnimacao(destructionAnimation);
+        getAnimacao().ativarForward();
 
-        setAnimationActive(true);
-
-        setStateTime(getStateTime() + Gdx.graphics.getDeltaTime());
-
-        if (destructionAnimation.foward.isAnimationFinished(getStateTime())) {
-            setAnimationActive(false);
-            setStateTime(0f);
-            return;
-        }
-
-        TextureRegion currentFrame = destructionAnimation.foward.getKeyFrame(getStateTime(), true);
-        batch.draw(currentFrame, getX() - getWidth() / 2, getY() - getHeight() / 2, getWidth(), getHeight());
+        rodarAnimacao();
     }
 
     @Override
@@ -157,5 +175,9 @@ public class Vaus extends Animavel {
         imgNormal.dispose();
         imgLazer.dispose();
         imgLarge.dispose();
+    }
+
+    public void setHabilidade(vausHabilidade habilidade) {
+        this.habilidade = habilidade;
     }
 }

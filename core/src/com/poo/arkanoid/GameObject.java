@@ -4,7 +4,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 public abstract class GameObject {
-    SpriteBatch batch;
+    private final SpriteBatch batch;
     private float x, y;
     private float height, width;
     private Texture textura;
@@ -61,4 +61,7 @@ public abstract class GameObject {
         this.textura = textura;
     }
 
+    public SpriteBatch getBatch() {
+        return batch;
+    }
 }

@@ -16,29 +16,14 @@ public class Player
     private static int highscore;
     private int score;
     private int vidas;
-
-    private int nivelAtual;
+    private static int nivelAtual;
 
     public Player() throws FileNotFoundException {
         score = 0;
         vidas = 3;
         nivelAtual = 1;
 
-        try {
-            File playerData = new File("player.dat");
-            if (playerData.createNewFile()) {
-                FileWriter wt = new FileWriter("player.dat");
-                wt.write(0);
-                wt.close();
-                highscore = 0;
-            } else {
-                Scanner sc = new Scanner(playerData);
-                highscore = sc.nextInt();
-            }
-        } catch (IOException e) {
-            System.out.println("ERRO: Nao foi possivel ler os dados do jogador");
-            e.printStackTrace();
-        }
+        getHighscore();
     }
 
     public void drawHighscore(int x, int y, SpriteBatch batch, BitmapFont font) {
@@ -56,7 +41,7 @@ public class Player
             scoreFormat = "0".concat(scoreFormat);
         }
 
-        font.draw(batch, scoreFormat, x, y);
+        font.draw(batch, scoreFormat, x , y );
     }
 
     public void drawLives(int x, int y, SpriteBatch batch) {
@@ -74,6 +59,22 @@ public class Player
     }
 
     public int getHighscore() {
+        try {
+            File playerData = new File("player.dat");
+            if (playerData.createNewFile()) {
+                FileWriter wt = new FileWriter("player.dat");
+                wt.write(0);
+                wt.close();
+                highscore = 0;
+            } else {
+                Scanner sc = new Scanner(playerData);
+                highscore = sc.nextInt();
+            }
+        } catch (IOException e) {
+            System.out.println("ERRO: Nao foi possivel ler os dados do jogador");
+            e.printStackTrace();
+        }
+
         return highscore;
     }
 

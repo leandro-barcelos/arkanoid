@@ -1,29 +1,17 @@
 package com.poo.arkanoid;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 
 public class Gate extends Animavel {
-
-    public boolean isEspelhar() {
-        return espelhar;
-    }
-
-    public int getRotacao() {
-        return rotacao;
-    }
-
     public enum estadoParede {
         ABERTA,
         FECHADA
     }
-    estadoParede estado;
-    Texture imgFechada, imgAberta;
-    Animacao openAnimation;
+    private estadoParede estado;
+    private final Texture imgFechada;
+    private final Texture imgAberta;
     private final boolean espelhar;
     private final int rotacao;
 
@@ -38,7 +26,7 @@ public class Gate extends Animavel {
         imgAberta = new Texture("Gates/wall-open.png");
 
         // CARREGAR ANIMACOES
-        openAnimation = new Animacao(new Texture("Gates/wall-open-spritesheet.png"), 1, 8);
+        setAnimacao(new Animacao(new Texture("Gates/wall-open-spritesheet.png"), 1, 8, 1f));
 
         estado = estadoParede.FECHADA;
 
@@ -59,30 +47,20 @@ public class Gate extends Animavel {
         }
 
         setWidth(getTextura().getWidth());
-        batch.draw(getTextura(), getX() - getWidth() / 2, getY() - getHeight() / 2, getWidth() / 2, getHeight() / 2, getWidth(), getHeight(), 1, 1, rotacao, 0, 0, (int) getWidth(), (int) getHeight(), espelhar, false);
+        getBatch().draw(getTextura(), getX() - getWidth() / 2, getY() - getHeight() / 2, getWidth() / 2, getHeight() / 2, getWidth(), getHeight(), 1, 1, rotacao, 0, 0, (int) getWidth(), (int) getHeight(), espelhar, false);
     }
 
-    public void mudarEstado(SpriteBatch batch, estadoParede paraEstado) {
+    public void mudarEstado(estadoParede paraEstado) {
         if (estado == paraEstado) return;
 
-        Animation<TextureRegion> toModeAnimation;
-
-        if (paraEstado == estadoParede.FECHADA) toModeAnimation = openAnimation.backward;
-        else toModeAnimation = openAnimation.foward;
-
-        setAnimationActive(true);
-
-        setStateTime(getStateTime() + Gdx.graphics.getDeltaTime());
-
-        if (toModeAnimation.isAnimationFinished(getStateTime())) {
-            estado = paraEstado;
-            setAnimationActive(false);
-            setStateTime(0f);
-            return;
+        if (paraEstado == estadoParede.FECHADA) {
+            getAnimacao().ativarBackward();
+        }
+        else {
+            getAnimacao().ativarForward();
         }
 
-        TextureRegion currentFrame = toModeAnimation.getKeyFrame(getStateTime(), true);
-        batch.draw(currentFrame, getX() - getWidth() / 2, getY(), 0, getHeight(),  getWidth() / 2, getHeight() / 2, (espelhar ? -1 : 1), 1, rotacao);
+        if(rodarAnimacao(espelhar, rotacao)) estado = paraEstado;
     }
 
     @Override
@@ -91,5 +69,20 @@ public class Gate extends Animavel {
         imgAberta.dispose();
     }
 
+    public boolean isEspelhar() {
+        return espelhar;
+    }
+
+    public int getRotacao() {
+        return rotacao;
+    }
+
+    public estadoParede getEstado() {
+        return estado;
+    }
+
+    public Texture getImgFechada() {
+        return imgFechada;
+    }
 
 }

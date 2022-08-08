@@ -8,9 +8,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.ScreenUtils;
-
 import java.io.FileNotFoundException;
-import java.io.IOException;
 
 public class Arkanoid extends ApplicationAdapter {
 
@@ -18,8 +16,7 @@ public class Arkanoid extends ApplicationAdapter {
     SpriteBatch batch;
     OrthographicCamera camera;
     BitmapFont gameFont;
-    Nivel []niveis;
-    Nivel nivelAtual;
+    Nivel nivel;
     TelaInicial startScreen;
     Player player;
     boolean startGame;
@@ -38,82 +35,74 @@ public class Arkanoid extends ApplicationAdapter {
 
         try {
             player = new Player();
+            nivel = new Nivel(player, batch, width, height, player.getNivelAtual());
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }
-        startScreen = new TelaInicial(batch, player.getHighscore());
 
-        niveis = new Nivel[33];
-        for (int i = 0; i < 3; i++) {
-            try {
-                niveis[i] = new Nivel(player, batch, width, height, i+1);
-            } catch (FileNotFoundException e) {
-                throw new RuntimeException(e);
-            }
-        }
+        startScreen = new TelaInicial(batch, player.getHighscore());
 
         startGame = false;
     }
 
     @Override
     public void render() {
-        ScreenUtils.clear(1, 0, 0, 1);
-        camera.update();
-        batch.setProjectionMatrix(camera.combined);
-        batch.begin();
+        try {
+            ScreenUtils.clear(1, 0, 0, 1);
+            camera.update();
+            batch.setProjectionMatrix(camera.combined);
+            batch.begin();
 
-        startGame = Gdx.input.isKeyPressed(Input.Keys.ENTER) || startGame;
+            startGame = Gdx.input.isKeyPressed(Input.Keys.ENTER) || startGame;
 
-        if (!startGame) {
-            try {
-                startScreen.draw(player, gameFont);
-            } catch (FileNotFoundException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        else {
+            if (!startGame) {
+                if (nivel.getLevelNum() != player.getNivelAtual())
+                    nivel = new Nivel(player, batch, width, height, player.getNivelAtual());
 
-            nivelAtual = niveis[player.getNivelAtual() - 1];
-            nivelAtual.draw(gameFont);
-            nivelAtual.moverObjetos();
-
-            nivelAtual.bola.grudar = !Gdx.input.isKeyPressed(Input.Keys.SPACE) && nivelAtual.bola.grudar;
-
-            if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
-                nivelAtual.bola.grudar = false;
-            }
-
-            nivelAtual.colisao();
-            try {
-                nivelAtual.player.setHighscore();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-
-            try {
-                // GAME OVER
-                if (nivelAtual.checarDerrota()) {
-                    nivelAtual.loadMapa();
-                    startGame = false;
-                    player.reset();
+                try {
+                    startScreen.draw(player, gameFont);
+                } catch (FileNotFoundException e) {
+                    throw new RuntimeException(e);
                 }
-            } catch (FileNotFoundException e) {
-                throw new RuntimeException(e);
+            } else {
+                if (player.getNivelAtual() != nivel.getLevelNum()) {
+                    nivel = new Nivel(player, batch, width, height, player.getNivelAtual());
+                }
+
+                nivel.draw(gameFont);
+                nivel.moverObjetos();
+
+                nivel.bola.setGrudar(!Gdx.input.isKeyPressed(Input.Keys.SPACE) && nivel.bola.isGrudar());
+                if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) nivel.vaus.atirar();
+
+                if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
+                    nivel.bola.setGrudar(false);
+                }
+
+                nivel.colisao();
+                nivel.player.setHighscore();
+
+                nivel.blocosNivel.spawnarPoder(nivel);
+
+                // GAME OVER
+                if (nivel.checarDerrota()) {
+                    startGame = false;
+                } else if (nivel.checarVitoria()) {
+                    player.incNivelAtual();
+                }
             }
 
-            if (nivelAtual.checarVitoria()){
-                player.incNivelAtual();
-            }
-
+            batch.end();
         }
-
-        batch.end();
+        catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public void dispose() {
         startScreen.dispose();
         batch.dispose();
-        nivelAtual.dispose();
+        nivel.dispose();
     }
 }

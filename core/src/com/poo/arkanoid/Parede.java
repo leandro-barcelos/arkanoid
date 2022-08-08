@@ -1,6 +1,6 @@
 package com.poo.arkanoid;
 
-public class Parede {
+public class Parede implements Colidivel<Void, Bola> {
     private final int limXEsq;
     private final int limXDir;
     private final int limYTop;
@@ -13,7 +13,8 @@ public class Parede {
         this.limYBot = limYBot;
     }
 
-    void colisao(Bola b) {
+    @Override
+    public Void colisao(Bola b) {
         if (b.getX() - b.getWidth() / 2 <= limXEsq) {
             b.setX(limXEsq + b.getWidth() / 2);
             b.setxSpeed(-b.getxSpeed());
@@ -25,6 +26,8 @@ public class Parede {
             b.setY(limYTop - b.getHeight() / 2);
             b.setySpeed(-b.getySpeed());
         }
+
+        return null;
     }
 
     public int getLimXEsq() {

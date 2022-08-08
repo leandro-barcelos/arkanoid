@@ -5,10 +5,12 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 public class Animacao {
-    Animation<TextureRegion> foward;
-    Animation<TextureRegion> backward;
+    private final Animation<TextureRegion> forward;
+    private final Animation<TextureRegion> backward;
 
-    public Animacao(Texture spritesheet, int rows, int columns) {
+    private Animation<TextureRegion> ativa;
+
+    public Animacao(Texture spritesheet, int rows, int columns, float tempoAnimacao) {
         TextureRegion[][] tmp = TextureRegion.split(spritesheet,
                 spritesheet.getWidth() / columns,
                 spritesheet.getHeight() / rows);
@@ -31,9 +33,19 @@ public class Animacao {
             }
         }
 
-        foward = new Animation<>(1f / (columns * rows), fowardFrames);
-        backward = new Animation<>(1f / (rows * columns), backwardFrames);
+        forward = new Animation<>(tempoAnimacao / (columns * rows), fowardFrames);
+        backward = new Animation<>(tempoAnimacao / (rows * columns), backwardFrames);
     }
 
+    public void ativarForward() {
+        if (ativa != forward) ativa = forward;
+    }
 
+    public void ativarBackward() {
+        if (ativa != backward) ativa = backward;
+    }
+
+    public Animation<TextureRegion> getAtiva() {
+        return ativa;
+    }
 }
