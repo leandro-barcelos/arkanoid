@@ -7,7 +7,6 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 public class Animacao {
     private final Animation<TextureRegion> forward;
     private final Animation<TextureRegion> backward;
-
     private Animation<TextureRegion> ativa;
 
     public Animacao(Texture spritesheet, int rows, int columns, float tempoAnimacao) {

@@ -5,65 +5,63 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
-import java.io.FileNotFoundException;
-
 public class Nivel {
-    Vaus vaus;
-    Gate gateTl, gateTr;
-    GateWarp gateWarp;
-    Bola bola;
-    Parede parede;
-    Player player;
-    Poder poder;
-    MatrizBlocos blocosNivel;
-    Texture background;
+    private final Vaus vaus;
+    private final Gate gateTl;
+    private final Gate gateTr;
+    private final GateWarp gateWarp;
+    private final Bola bola;
+    private final Parede parede;
     private final int levelNum;
-    SpriteBatch batch;
-    int windowWidth, windowHeight;
+    private final SpriteBatch batch;
+    private final int windowWidth;
+    private final int windowHeight;
+    private Poder poder;
+    private MatrizBlocos blocosNivel;
+    private Texture background;
+    private boolean readyDone;
+    private float readyTime;
 
-    boolean messageDone;
-    float messageTime;
-
-    public Nivel(Player player, SpriteBatch batch, int windowWidth, int windowHeight, int levelNum) throws FileNotFoundException {
+    public Nivel(SpriteBatch batch, int windowWidth, int windowHeight, int levelNum) {
         this.levelNum = levelNum;
         this.batch = batch;
         this.windowWidth = windowWidth;
         this.windowHeight = windowHeight;
-        this.player = player;
 
         parede = new Parede(32, 384, 449, 0);
-        vaus = new Vaus((parede.getLimXEsq() + parede.getLimXDir()) / 2, 57, 64, 14, batch);
-        bola = new Bola(0, 66, 8, 8, batch);
+        vaus = new Vaus((parede.getLimXEsq() + parede.getLimXDir()) / 2, 57, batch);
+        bola = new Bola(0, 66, batch);
+        bola.grudarBarra(vaus);
         bola.setGrudar(true);
 
         blocosNivel = new MatrizBlocos(levelNum, 28, 11, parede.getLimXEsq(), batch);
 
-        gateTl = new Gate(135, 456, 16, 46, true, 90, batch);
-        gateTr = new Gate(283, 456, 16, 46, true, 90, batch);
-        gateWarp = new GateWarp(392, 57, 16, 46, false, 0, batch);
+        gateTl = new Gate(135, 456, true, 90, batch);
+        gateTr = new Gate(283, 456, true, 90, batch);
+        gateWarp = new GateWarp(392, 57, false, 0, batch);
 
         switch ((levelNum - 1) % 4) {
             case 0:
                 background = new Texture("Telas/background-blue.png");
                 break;
             case 1:
-              background = new Texture("Telas/background-green.png");
+                background = new Texture("Telas/background-green.png");
                 break;
             case 2:
-               background = new Texture("Telas/background-dark-blue.png");
+                background = new Texture("Telas/background-dark-blue.png");
                 break;
             case 3:
-               background = new Texture("Telas/background-red.png");
+                background = new Texture("Telas/background-red.png");
                 break;
         }
 
-        messageTime = 0;
-        messageDone = false;
+        readyTime = 0;
+        readyDone = false;
         poder = null;
     }
 
-    void draw(BitmapFont font) {
-        batch.draw(background, 0,0,windowWidth,windowHeight);
+    public void draw(BitmapFont font, Player player) {
+        batch.draw(background, 0, 0, windowWidth, windowHeight);
 
 
         // PORTOES
@@ -81,17 +79,17 @@ public class Nivel {
         // BLOCOS
         blocosNivel.draw();
 
-        if (!messageDone) {
-            font.draw(batch, "READY", (float)((parede.getLimXEsq() + parede.getLimXDir()) / 2 - 120), 67);
-            messageTime += Gdx.graphics.getDeltaTime();
+        if (!readyDone) {
+            font.draw(batch, "READY", (float) ((parede.getLimXEsq() + parede.getLimXDir()) / 2 - 120), 67);
+            readyTime += Gdx.graphics.getDeltaTime();
 
-            if (messageTime >= 1) {
-                messageDone = true;
-                messageTime = 0;
+            if (readyTime >= 1) {
+                readyDone = true;
+                readyTime = 0;
             }
         }
 
-        if (messageDone && !bola.perdeu()) {
+        if (readyDone && !bola.perdeu()) {
             vaus.draw();
             bola.draw();
         }
@@ -99,15 +97,15 @@ public class Nivel {
         if (poder != null && !poder.colisao(vaus))
             poder.draw();
 
-        for (Laser []i: vaus.getLasers()) {
-            for (Laser j: i){
+        for (Laser[] i : vaus.getLasers()) {
+            for (Laser j : i) {
                 if (j != null) j.draw();
             }
         }
     }
 
     public void moverObjetos() {
-        if (!bola.perdeu() && messageDone) {
+        if (!bola.perdeu() && readyDone) {
             bola.mover();
             vaus.Mover(parede);
             if (poder != null && !poder.colisao(vaus)) {
@@ -119,11 +117,9 @@ public class Nivel {
         }
     }
 
-    void colisao() {
-        if (bola.isGrudar())
+    public void colisao(Player player) {
+        if (vaus.colisao(bola) && bola.isGrudar())
             bola.grudarBarra(vaus);
-        else
-            vaus.colisao(bola);
 
         parede.colisao(bola);
 
@@ -135,15 +131,17 @@ public class Nivel {
             if (vaus.getLasers().get(i)[0] != null) {
                 pontosLaser = vaus.getLasers().get(i)[0].colisao(blocosNivel);
 
-                if (pontosLaser > 0) {
+                if (pontosLaser >= 0) {
                     player.setScore(player.getScore() + pontosLaser);
                     vaus.getLasers().get(i)[0] = null;
                 }
-            } else if (vaus.getLasers().get(i)[1] != null) {
+            }
+
+            if (vaus.getLasers().get(i)[1] != null) {
 
                 pontosLaser = vaus.getLasers().get(i)[1].colisao(blocosNivel);
 
-                if (pontosLaser > 0) {
+                if (pontosLaser >= 0) {
                     player.setScore(player.getScore() + pontosLaser);
                     vaus.getLasers().get(i)[1] = null;
                 }
@@ -164,11 +162,11 @@ public class Nivel {
         }
     }
 
-    boolean checarVitoria() {
+    public boolean checarVitoria() {
         return blocosNivel.isTudoQuebrado() || gateWarp.colisao(vaus);
     }
 
-    boolean checarDerrota() throws FileNotFoundException {
+    public boolean checarDerrota(Player player) {
         if (bola.perdeu()) {
             vaus.destroy();
             if (!vaus.getAnimationActive()) {
@@ -186,7 +184,7 @@ public class Nivel {
     }
 
 
-    void reset(){
+    public void reset() {
         vaus.setX((float) (parede.getLimXEsq() + parede.getLimXDir()) / 2);
         vaus.setY(57);
         vaus.setHabilidade(Vaus.vausHabilidade.NORMAL);
@@ -194,9 +192,10 @@ public class Nivel {
         bola.setVelocidade(0);
 
         bola.setGrudar(true);
+        bola.grudarBarra(vaus);
         poder = null;
 
-        messageDone = true;
+        readyDone = true;
     }
 
     public void dispose() {
@@ -206,5 +205,29 @@ public class Nivel {
 
     public int getLevelNum() {
         return levelNum;
+    }
+
+    public Vaus getVaus() {
+        return vaus;
+    }
+
+    public Bola getBola() {
+        return bola;
+    }
+
+    public Poder getPoder() {
+        return poder;
+    }
+
+    public void setPoder(Poder poder) {
+        this.poder = poder;
+    }
+
+    public MatrizBlocos getBlocosNivel() {
+        return blocosNivel;
+    }
+
+    public SpriteBatch getBatch() {
+        return batch;
     }
 }

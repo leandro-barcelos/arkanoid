@@ -5,11 +5,11 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
-public class GateWarp extends Gate implements Colidivel<Boolean, Vaus>{
+public class GateWarp extends Gate implements Colidivel<Boolean, Vaus> {
     private float warpStateTime;
 
-    public GateWarp(float x, float y, float width, float height, boolean espelhado, int rotacao, SpriteBatch batch) {
-        super(x, y, width, height, espelhado, rotacao, batch);
+    public GateWarp(float x, float y, boolean espelhado, int rotacao, SpriteBatch batch) {
+        super(x, y, espelhado, rotacao, batch);
         setAnimacao(new Animacao(new Texture("Gates/wall-warp-spritesheet.png"), 1, 2, 1f));
         getAnimacao().ativarForward();
 
@@ -37,6 +37,6 @@ public class GateWarp extends Gate implements Colidivel<Boolean, Vaus>{
 
     @Override
     public Boolean colisao(Vaus objeto) {
-        return (objeto.getX() + objeto.getWidth() /2 >= getX() - getWidth() / 2 && getEstado() == estadoParede.ABERTA);
+        return (objeto.getX() + objeto.getWidth() / 2 >= getX() - getWidth() / 2 && getEstado() == estadoParede.ABERTA);
     }
 }

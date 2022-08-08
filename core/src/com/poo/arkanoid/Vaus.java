@@ -7,26 +7,14 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 import java.util.ArrayList;
 
-public class Vaus extends Animavel {
-
-    public ArrayList<Laser[]> getLasers() {
-        return lasers;
-    }
-
-    public enum vausHabilidade {
-        NORMAL,
-        LARGE,
-        LAZER
-    }
-
+public class Vaus extends Animavel implements Colidivel<Boolean, Bola> {
     private final Texture imgNormal, imgLazer, imgLarge;
     private final Animacao toLargeAnimation, toLazerAnimation, destructionAnimation;
+    private final ArrayList<Laser[]> lasers;
     private vausHabilidade habilidade;
-    private final ArrayList<Laser []> lasers;
     private float cadenciaLaser;
-
-    public Vaus(int x, int y, int width, int height, SpriteBatch batch) {
-        super(x, y, width, height, batch);
+    public Vaus(int x, int y, SpriteBatch batch) {
+        super(x, y, 64, 14, batch);
 
         // CARREGAR TEXTURAS
         imgNormal = new Texture("Vaus/vaus-normal.png");
@@ -36,7 +24,7 @@ public class Vaus extends Animavel {
         // CARREGAR ANIMACOES
         toLargeAnimation = new Animacao(new Texture("Vaus/vaus-large-spritesheet.png"), 6, 1, 0.75f);
         toLazerAnimation = new Animacao(new Texture("Vaus/vaus-lazer-spritesheet.png"), 8, 1, 1f);
-        destructionAnimation = new Animacao(new Texture("Vaus/vaus-break-spritesheet.png"),8, 1, 1f);
+        destructionAnimation = new Animacao(new Texture("Vaus/vaus-break-spritesheet.png"), 8, 1, 1f);
         destructionAnimation.ativarForward();
 
         habilidade = vausHabilidade.NORMAL;
@@ -50,6 +38,10 @@ public class Vaus extends Animavel {
         return habilidade;
     }
 
+    public void setHabilidade(vausHabilidade habilidade) {
+        this.habilidade = habilidade;
+    }
+
     public void atirar() {
         if (getHabilidade() != vausHabilidade.LAZER || getAnimationActive()) return;
 
@@ -59,7 +51,7 @@ public class Vaus extends Animavel {
         }
 
 
-        Laser []novo = new Laser[2];
+        Laser[] novo = new Laser[2];
         novo[0] = new Laser(getX() - 27, getY() + getHeight() / 2, getBatch());
         novo[1] = new Laser(getX() + 27, getY() + getHeight() / 2, getBatch());
 
@@ -77,7 +69,7 @@ public class Vaus extends Animavel {
         if (getX() - getWidth() / 2 > parede.getLimXDir() - getWidth())
             setX(parede.getLimXDir() - getWidth() / 2);
 
-        for (Laser [] i: lasers) {
+        for (Laser[] i : lasers) {
             if (i[0] != null) i[0].mover();
             if (i[1] != null) i[1].mover();
         }
@@ -136,18 +128,19 @@ public class Vaus extends Animavel {
         getBatch().draw(getTextura(), getX() - getWidth() / 2, getY() - getHeight() / 2, getWidth(), getHeight());
     }
 
-    void colisao(Bola b) {
+    @Override
+    public Boolean colisao(Bola objeto) {
         boolean colidiu;
-        colidiu = (b.getY() - 1 - (b.getHeight() / 2) <= (getY() + getHeight() / 2) && b.getY() + b.getHeight() / 2 >= (getY() - getHeight() / 2))
-                && (b.getX() >= getX() - (getWidth() / 2) && b.getX() <= getX() + (getWidth() / 2));
-        if (colidiu) {
-            if (b.getVelocidade() == 0 ) b.setVelocidade(300);
-            else if (b.getVelocidade() < 500) b.setVelocidade(b.getVelocidade() + 2);
+        colidiu = (objeto.getY() - 1 - (objeto.getHeight() / 2) <= (getY() + getHeight() / 2) && objeto.getY() + objeto.getHeight() / 2 >= (getY() - getHeight() / 2))
+                && (objeto.getX() >= getX() - (getWidth() / 2) && objeto.getX() <= getX() + (getWidth() / 2));
+        if (colidiu && !objeto.isGrudar()) {
+            if (objeto.getVelocidade() == 0) objeto.setVelocidade(300);
+            else if (objeto.getVelocidade() < 500) objeto.setVelocidade(objeto.getVelocidade() + 2);
 
             int maxGrau = 70;
 
-            float distancia = b.getX() - getX();
-            float intervaloAngulos =  (float) maxGrau / (getWidth() / 2);
+            float distancia = objeto.getX() - getX();
+            float intervaloAngulos = (float) maxGrau / (getWidth() / 2);
             float teta = maxGrau;
 
             for (int i = (int) -(getWidth() / 2 - 1); i <= (getWidth() / 2); i++) {
@@ -158,9 +151,11 @@ public class Vaus extends Animavel {
                 }
             }
 
-            b.setxSpeed((float) (b.getVelocidade() * Math.cos(Math.PI / 180 * teta)));
-            b.setySpeed((float) (b.getVelocidade() * Math.sin(Math.PI / 180 * teta)));
+            objeto.setxSpeed((float) (objeto.getVelocidade() * Math.cos(Math.PI / 180 * teta)));
+            objeto.setySpeed((float) (objeto.getVelocidade() * Math.sin(Math.PI / 180 * teta)));
         }
+
+        return colidiu;
     }
 
     void destroy() {
@@ -177,7 +172,13 @@ public class Vaus extends Animavel {
         imgLarge.dispose();
     }
 
-    public void setHabilidade(vausHabilidade habilidade) {
-        this.habilidade = habilidade;
+    public ArrayList<Laser[]> getLasers() {
+        return lasers;
+    }
+
+    public enum vausHabilidade {
+        NORMAL,
+        LARGE,
+        LAZER
     }
 }

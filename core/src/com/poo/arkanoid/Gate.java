@@ -5,18 +5,13 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 
 public class Gate extends Animavel {
-    public enum estadoParede {
-        ABERTA,
-        FECHADA
-    }
-    private estadoParede estado;
     private final Texture imgFechada;
     private final Texture imgAberta;
     private final boolean espelhar;
     private final int rotacao;
-
-    public Gate(float x, float y, float width, float height, boolean espelhar, int rotacao, SpriteBatch batch) {
-        super(x, y, width, height, batch);
+    private estadoParede estado;
+    public Gate(float x, float y, boolean espelhar, int rotacao, SpriteBatch batch) {
+        super(x, y, 16, 46, batch);
 
         this.espelhar = espelhar;
         this.rotacao = rotacao;
@@ -55,12 +50,11 @@ public class Gate extends Animavel {
 
         if (paraEstado == estadoParede.FECHADA) {
             getAnimacao().ativarBackward();
-        }
-        else {
+        } else {
             getAnimacao().ativarForward();
         }
 
-        if(rodarAnimacao(espelhar, rotacao)) estado = paraEstado;
+        if (rodarAnimacao(espelhar, rotacao)) estado = paraEstado;
     }
 
     @Override
@@ -83,6 +77,11 @@ public class Gate extends Animavel {
 
     public Texture getImgFechada() {
         return imgFechada;
+    }
+
+    public enum estadoParede {
+        ABERTA,
+        FECHADA
     }
 
 }

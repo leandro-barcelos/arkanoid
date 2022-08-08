@@ -5,7 +5,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
-public abstract class Poder extends Animavel implements Colidivel<Boolean, Vaus>{
+public abstract class Poder extends Animavel implements Colidivel<Boolean, Vaus> {
     public Poder(float x, float y, float width, float height, Texture rodarSpritesheet, SpriteBatch batch) {
         super(x, y, width, height, batch);
 

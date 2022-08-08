@@ -8,7 +8,6 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.ScreenUtils;
-import java.io.FileNotFoundException;
 
 public class Arkanoid extends ApplicationAdapter {
 
@@ -23,24 +22,20 @@ public class Arkanoid extends ApplicationAdapter {
 
     @Override
     public void create() {
-        width = 640 ;
+        width = 640;
         height = 480;
 
         camera = new OrthographicCamera();
         camera.setToOrtho(false, width, height);
         batch = new SpriteBatch();
 
-        gameFont = new BitmapFont(Gdx.files.internal("joystix-font.fnt") , Gdx.files.internal("joystix-font.png"), false);
+        gameFont = new BitmapFont(Gdx.files.internal("joystix-font.fnt"), Gdx.files.internal("joystix-font.png"), false);
         gameFont.setColor(Color.WHITE);
 
-        try {
-            player = new Player();
-            nivel = new Nivel(player, batch, width, height, player.getNivelAtual());
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        }
+        player = new Player();
+        nivel = new Nivel(batch, width, height, player.getNivelAtual());
 
-        startScreen = new TelaInicial(batch, player.getHighscore());
+        startScreen = new TelaInicial(batch);
 
         startGame = false;
     }
@@ -55,37 +50,35 @@ public class Arkanoid extends ApplicationAdapter {
 
             startGame = Gdx.input.isKeyPressed(Input.Keys.ENTER) || startGame;
 
-            if (!startGame) {
-                if (nivel.getLevelNum() != player.getNivelAtual())
-                    nivel = new Nivel(player, batch, width, height, player.getNivelAtual());
 
-                try {
-                    startScreen.draw(player, gameFont);
-                } catch (FileNotFoundException e) {
-                    throw new RuntimeException(e);
-                }
+            if (nivel.getLevelNum() != player.getNivelAtual())
+                nivel = new Nivel(batch, width, height, player.getNivelAtual());
+
+
+            if (!startGame) {
+                startScreen.draw(player, gameFont);
             } else {
                 if (player.getNivelAtual() != nivel.getLevelNum()) {
-                    nivel = new Nivel(player, batch, width, height, player.getNivelAtual());
+                    nivel = new Nivel(batch, width, height, player.getNivelAtual());
                 }
 
-                nivel.draw(gameFont);
+                nivel.draw(gameFont, player);
                 nivel.moverObjetos();
 
-                nivel.bola.setGrudar(!Gdx.input.isKeyPressed(Input.Keys.SPACE) && nivel.bola.isGrudar());
-                if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) nivel.vaus.atirar();
+                nivel.getBola().setGrudar(!Gdx.input.isKeyPressed(Input.Keys.SPACE) && nivel.getBola().isGrudar());
+                if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) nivel.getVaus().atirar();
 
                 if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
-                    nivel.bola.setGrudar(false);
+                    nivel.getBola().setGrudar(false);
                 }
 
-                nivel.colisao();
-                nivel.player.setHighscore();
+                nivel.colisao(player);
+                player.setHighscore();
 
-                nivel.blocosNivel.spawnarPoder(nivel);
+                nivel.getBlocosNivel().spawnarPoder(nivel);
 
                 // GAME OVER
-                if (nivel.checarDerrota()) {
+                if (nivel.checarDerrota(player)) {
                     startGame = false;
                 } else if (nivel.checarVitoria()) {
                     player.incNivelAtual();
@@ -93,8 +86,7 @@ public class Arkanoid extends ApplicationAdapter {
             }
 
             batch.end();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }

@@ -18,13 +18,15 @@ public class Parede implements Colidivel<Void, Bola> {
         if (b.getX() - b.getWidth() / 2 <= limXEsq) {
             b.setX(limXEsq + b.getWidth() / 2);
             b.setxSpeed(-b.getxSpeed());
-        } else if (b.getX() + b.getWidth() / 2 >= limXDir){
+            b.incVelocidade(5);
+        } else if (b.getX() + b.getWidth() / 2 >= limXDir) {
             b.setX(limXDir - b.getWidth() / 2);
             b.setxSpeed(-b.getxSpeed());
-        }
-        else if (b.getY() + b.getHeight() / 2  >= limYTop) {
+            b.incVelocidade(5);
+        } else if (b.getY() + b.getHeight() / 2 >= limYTop) {
             b.setY(limYTop - b.getHeight() / 2);
             b.setySpeed(-b.getySpeed());
+            b.incVelocidade(5);
         }
 
         return null;

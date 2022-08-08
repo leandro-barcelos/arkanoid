@@ -11,8 +11,8 @@ public class Bola extends GameObject {
     private boolean grudar;
     private int velocidade;
 
-    public Bola(float x, float y, float width, float height, SpriteBatch batch) {
-        super(x, y, width, height, batch);
+    public Bola(float x, float y, SpriteBatch batch) {
+        super(x, y, 8, 8, batch);
 
         setTextura(new Texture("ball.png"));
         ySpeed = 0;
@@ -30,8 +30,6 @@ public class Bola extends GameObject {
     void grudarBarra(Vaus vaus) {
         setX(vaus.getX() + (vaus.getWidth() / 2) - 12);
         setY(vaus.getY() + (vaus.getHeight() / 2) + getHeight() / 2 + 1);
-
-        setVelocidade(250);
     }
 
     public boolean perdeu() {
@@ -70,6 +68,19 @@ public class Bola extends GameObject {
 
     public void setVelocidade(int velocidade) {
         this.velocidade = velocidade;
+    }
+
+    public void incVelocidade(int valor) {
+        if (velocidade + valor >= 350)
+            return;
+
+        double cosTeta = xSpeed / velocidade;
+        double sinTeta = ySpeed / velocidade;
+
+        velocidade += valor;
+
+        xSpeed = (float) (velocidade * cosTeta);
+        ySpeed = (float) (velocidade * sinTeta);
     }
 
     public boolean isGrudar() {

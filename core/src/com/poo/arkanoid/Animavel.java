@@ -50,7 +50,7 @@ public abstract class Animavel extends GameObject {
         }
 
         TextureRegion currentFrame = getAnimacao().getAtiva().getKeyFrame(getStateTime(), true);
-        getBatch().draw(currentFrame, getX() - getWidth() / 2, getY(), 0, getHeight(),  getWidth() / 2, getHeight() / 2, (espelhar ? -1 : 1), 1, rotacao);
+        getBatch().draw(currentFrame, getX() - getWidth() / 2, getY(), 0, getHeight(), getWidth() / 2, getHeight() / 2, (espelhar ? -1 : 1), 1, rotacao);
 
         return false;
     }
@@ -71,7 +71,9 @@ public abstract class Animavel extends GameObject {
         this.stateTime = stateTime;
     }
 
-    public Animacao getAnimacao() {return animacao;}
+    public Animacao getAnimacao() {
+        return animacao;
+    }
 
     public void setAnimacao(Animacao animacao) {
         this.animacao = animacao;

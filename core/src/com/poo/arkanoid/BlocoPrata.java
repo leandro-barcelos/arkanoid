@@ -2,7 +2,7 @@ package com.poo.arkanoid;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
-public class BlocoPrata extends Bloco{
+public class BlocoPrata extends Bloco {
     public BlocoPrata(float x, float y, int levelNum, SpriteBatch batch) {
         super(x, y, CorBlocos.SILVER, batch);
 

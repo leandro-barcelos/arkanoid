@@ -4,20 +4,16 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
-import java.io.FileNotFoundException;
-
 public class TelaInicial {
-    SpriteBatch batch;
-    int highscore;
-    Texture background;
+    private final SpriteBatch batch;
+    private final Texture background;
 
-    public TelaInicial(SpriteBatch batch, int highscore) {
+    public TelaInicial(SpriteBatch batch) {
         this.batch = batch;
-        this.highscore = highscore;
         background = new Texture("Telas/tela-inicial.png");
     }
 
-    public void draw(Player player, BitmapFont font) throws FileNotFoundException {
+    public void draw(Player player, BitmapFont font) {
         batch.draw(background, 0, 0, background.getWidth(), background.getHeight());
         player.drawHighscore(248, 460, batch, font);
     }
@@ -25,4 +21,5 @@ public class TelaInicial {
     public void dispose() {
         background.dispose();
     }
+
 }

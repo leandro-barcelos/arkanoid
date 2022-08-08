@@ -1,27 +1,27 @@
 package com.poo.arkanoid;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 import java.awt.*;
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.Random;
 import java.util.Scanner;
 
 public class MatrizBlocos implements Colidivel<Integer, Bola> {
-    private final Bloco [][]matriz;
+    private final Bloco[][] matriz;
+    private final Random rand;
     private int blocosQuebrados;
     private int randNBlocos;
     private Bloco ultimoQuebrado;
-    private final Random rand;
 
-    public MatrizBlocos(int levelNum, int linhas, int colunas, int minX, SpriteBatch batch) throws FileNotFoundException {
+    public MatrizBlocos(int levelNum, int linhas, int colunas, int minX, SpriteBatch batch) {
         matriz = new Bloco[linhas][colunas];
 
         blocosQuebrados = 0;
 
-        File mapData = new File("levels/level" + levelNum + ".ark");
-        Scanner sc = new Scanner(mapData);
+        FileHandle mapData = Gdx.files.internal("levels/level" + levelNum + ".ark");
+        Scanner sc = new Scanner(mapData.readString());
         for (int i = 0; i < linhas; i++) {
             String line = sc.nextLine();
             matriz[i] = new Bloco[colunas];
@@ -32,11 +32,9 @@ public class MatrizBlocos implements Colidivel<Integer, Bola> {
 
                 if (tmp == '0') {
                     matriz[i][j] = null;
-                }
-                else if (tmp == 'S') {
+                } else if (tmp == 'S') {
                     matriz[i][j] = new BlocoPrata(blocoX, blocoY, levelNum, batch);
-                }
-                else {
+                } else {
                     CorBlocos cor;
                     switch (tmp) {
                         case 'D':
@@ -80,8 +78,8 @@ public class MatrizBlocos implements Colidivel<Integer, Bola> {
 
 
     public void draw() {
-        for (Bloco []i: matriz) {
-            for (Bloco j: i)
+        for (Bloco[] i : matriz) {
+            for (Bloco j : i)
                 if (j != null)
                     j.draw();
         }
@@ -92,7 +90,7 @@ public class MatrizBlocos implements Colidivel<Integer, Bola> {
     public Integer colisao(Bola objeto) {
         int pontos = 0;
 
-        for (int i = 0 ; i < matriz.length; i++) {
+        for (int i = 0; i < matriz.length; i++) {
             for (int j = 0; j < matriz[i].length; j++) {
                 if (matriz[i][j] != null) {
                     int[] coordTl = {(int) (matriz[i][j].getX() - 4), (int) (matriz[i][j].getY() + matriz[i][j].getHeight() + 4)};
@@ -145,8 +143,9 @@ public class MatrizBlocos implements Colidivel<Integer, Bola> {
                             pontos += matriz[i][j].getPontos();
                             ultimoQuebrado = matriz[i][j];
                             matriz[i][j] = null;
-                            blocosQuebrados ++;
+                            blocosQuebrados++;
                         }
+                        objeto.incVelocidade(5);
                     }
                 }
             }
@@ -157,8 +156,8 @@ public class MatrizBlocos implements Colidivel<Integer, Bola> {
 
     public void spawnarPoder(Nivel nivel) {
         if (blocosQuebrados - 1 >= randNBlocos) {
-            if (!nivel.vaus.getAnimationActive() && nivel.poder == null) {
-                nivel.poder = new PoderLazer(ultimoQuebrado.getX(), ultimoQuebrado.getY(), 32, 14, nivel.batch);
+            if (!nivel.getVaus().getAnimationActive() && nivel.getPoder() == null) {
+                nivel.setPoder(new PoderLazer(ultimoQuebrado.getX(), ultimoQuebrado.getY(), 32, 14, nivel.getBatch()));
                 randNBlocos = rand.nextInt(11);
                 blocosQuebrados = 0;
             }
@@ -166,8 +165,8 @@ public class MatrizBlocos implements Colidivel<Integer, Bola> {
     }
 
     public boolean isTudoQuebrado() {
-        for (Bloco []i: matriz)
-            for (Bloco j: i)
+        for (Bloco[] i : matriz)
+            for (Bloco j : i)
                 if (j != null && j.getCor() != CorBlocos.GOLDEN) return false;
 
         return true;
@@ -175,9 +174,5 @@ public class MatrizBlocos implements Colidivel<Integer, Bola> {
 
     public Bloco[][] getMatriz() {
         return matriz;
-    }
-
-    public void setBlocosQuebrados(int blocosQuebrados) {
-        this.blocosQuebrados = blocosQuebrados;
     }
 }

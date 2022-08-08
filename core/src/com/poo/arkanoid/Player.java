@@ -1,27 +1,25 @@
 package com.poo.arkanoid;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.Scanner;
-
-public class Player
-{
+public class Player {
 
     private static int highscore;
+    private static int nivelAtual;
+    private final FileHandle playerData;
     private int score;
     private int vidas;
-    private static int nivelAtual;
 
-    public Player() throws FileNotFoundException {
+    public Player() {
         score = 0;
         vidas = 3;
         nivelAtual = 1;
+
+        playerData = Gdx.files.local("player.dat");
 
         getHighscore();
     }
@@ -41,7 +39,7 @@ public class Player
             scoreFormat = "0".concat(scoreFormat);
         }
 
-        font.draw(batch, scoreFormat, x , y );
+        font.draw(batch, scoreFormat, x, y);
     }
 
     public void drawLives(int x, int y, SpriteBatch batch) {
@@ -58,46 +56,34 @@ public class Player
         nivelAtual = 1;
     }
 
-    public int getHighscore() {
-        try {
-            File playerData = new File("player.dat");
-            if (playerData.createNewFile()) {
-                FileWriter wt = new FileWriter("player.dat");
-                wt.write(0);
-                wt.close();
-                highscore = 0;
-            } else {
-                Scanner sc = new Scanner(playerData);
-                highscore = sc.nextInt();
-            }
-        } catch (IOException e) {
-            System.out.println("ERRO: Nao foi possivel ler os dados do jogador");
-            e.printStackTrace();
+    public void getHighscore() {
+        if (!playerData.exists()) {
+            playerData.writeString("0", false);
+            highscore = 0;
+        } else {
+            highscore = Integer.parseInt(playerData.readString());
         }
 
-        return highscore;
     }
 
-    public void setHighscore() throws IOException {
+    public void setHighscore() {
         if (score > highscore) {
             highscore = Math.min(score, 999999);
         }
 
-        FileWriter wt = new FileWriter("player.dat");
-        wt.write(String.valueOf(highscore));
-        wt.close();
+        playerData.writeString(String.valueOf(highscore), false);
     }
 
     public int getScore() {
         return score;
     }
 
-    public int getVidas() {
-        return vidas;
-    }
-
     public void setScore(int score) {
         this.score = score;
+    }
+
+    public int getVidas() {
+        return vidas;
     }
 
     public void incVidas() {
