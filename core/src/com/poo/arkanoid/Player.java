@@ -6,6 +6,8 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
+import java.util.Objects;
+
 public class Player {
 
     private static int highscore;
@@ -57,7 +59,7 @@ public class Player {
     }
 
     public void getHighscore() {
-        if (!playerData.exists()) {
+        if (Objects.equals(playerData.readString(), "")) {
             playerData.writeString("0", false);
             highscore = 0;
         } else {
