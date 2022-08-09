@@ -28,7 +28,7 @@ public class Bola extends GameObject {
     }
 
     void grudarBarra(Vaus vaus) {
-        setX(vaus.getX() + (vaus.getWidth() / 2) - 12);
+        setX(vaus.getX() + 20);
         setY(vaus.getY() + (vaus.getHeight() / 2) + getHeight() / 2 + 1);
 
         setxSpeed(0);

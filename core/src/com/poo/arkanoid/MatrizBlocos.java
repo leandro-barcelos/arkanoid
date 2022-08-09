@@ -202,6 +202,13 @@ public class MatrizBlocos implements Colidivel<Integer, Bola> {
         }
     }
 
+    public void dispose() {
+        for (Bloco[] i : matriz)
+            for (Bloco j: i)
+                j.dispose();
+        hitSound.dispose();
+    }
+
     public boolean isTudoQuebrado() {
         for (Bloco[] i : matriz)
             for (Bloco j : i)

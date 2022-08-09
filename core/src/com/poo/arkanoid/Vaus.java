@@ -133,8 +133,6 @@ public class Vaus extends Animavel implements Colidivel<Boolean, Bola> {
     public void draw() {
         if (getAnimationActive()) return;
 
-        setWidth(64);
-
         switch (habilidade) {
             case NORMAL:
                 setTextura(imgNormal);
@@ -158,8 +156,8 @@ public class Vaus extends Animavel implements Colidivel<Boolean, Bola> {
                 && (objeto.getX() >= getX() - (getWidth() / 2) && objeto.getX() <= getX() + (getWidth() / 2));
         if (colidiu && !objeto.isGrudar()) {
             hit.play(0.5f);
-            if (objeto.getVelocidade() == 0) objeto.setVelocidade(300);
-            else if (objeto.getVelocidade() < 500) objeto.setVelocidade(objeto.getVelocidade() + 2);
+            if (objeto.getVelocidade() == 0) objeto.setVelocidade(250);
+            else objeto.incVelocidade(2);
 
             int maxGrau = 70;
 
@@ -175,8 +173,7 @@ public class Vaus extends Animavel implements Colidivel<Boolean, Bola> {
                 }
             }
 
-            objeto.setxSpeed((float) (objeto.getVelocidade() * Math.cos(Math.PI / 180 * teta)));
-            objeto.setySpeed((float) (objeto.getVelocidade() * Math.sin(Math.PI / 180 * teta)));
+            objeto.setAngulo((float) (Math.PI / 180 * teta));
         }
 
         return colidiu;

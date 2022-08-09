@@ -113,7 +113,7 @@ public class Player {
     }
 
     public void incNivelAtual() {
-        if (nivelAtual < 15)
+        if (nivelAtual < 6)
             nivelAtual++;
         else nivelAtual = 1;
     }

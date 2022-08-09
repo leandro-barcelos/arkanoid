@@ -10,6 +10,6 @@ public class PoderSlow extends Poder implements PoderBola {
 
     @Override
     public void ativar(Bola bola) {
-        bola.setVelocidade(50);
+        bola.setVelocidade(100);
     }
 }

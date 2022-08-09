@@ -267,9 +267,18 @@ public class Nivel {
     public void dispose() {
         vaus.dispose();
         gateTl.dispose();
+        gateTr.dispose();
+        gateWarp.dispose();
         blocosNivel.getHitSound().dispose();
         poderSfx.dispose();
         parede.getHit().dispose();
+        for (Bola i : bolas)
+            if(i != null)
+                i.dispose();
+
+        poder.dispose();
+        blocosNivel.dispose();
+        background.dispose();
     }
 
     public int getLevelNum() {
