@@ -26,7 +26,7 @@ public class Parede implements Colidivel<Void, Bola> {
         } else if (b.getY() + b.getHeight() / 2 >= limYTop) {
             b.setY(limYTop - b.getHeight() / 2);
             b.setySpeed(-b.getySpeed());
-            b.incVelocidade(5);
+            b.incVelocidade(2);
         }
 
         return null;

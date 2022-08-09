@@ -114,16 +114,16 @@ public class MatrizBlocos implements Colidivel<Integer, Bola> {
                     int blocoI = (int) (26 - matriz[i][j].getY() / 16);
                     int blocoJ = (int) (matriz[i][j].getX() / 32 - 1);
 
-                    boolean esqBloq, topBloq, dirBloq, botBloq;
-                    esqBloq = blocoJ == 0 || matriz[blocoI][blocoJ - 1] != null;
-                    topBloq = blocoI == 0 || matriz[blocoI - 1][blocoJ] != null;
-                    dirBloq = blocoJ == 10 || matriz[blocoI][blocoJ + 1] != null;
-                    botBloq = blocoI == 27 || matriz[blocoI + 1][blocoJ] != null;
+//                    boolean esqBloq, topBloq , dirBloq, botBloq;
+//                    esqBloq = blocoJ == 0 || matriz[blocoI][blocoJ - 1] != null;
+//                    topBloq = blocoI == 0 || matriz[blocoI - 1][blocoJ] != null;
+//                    dirBloq = blocoJ == 10 || matriz[blocoI][blocoJ + 1] != null;
+//                    botBloq = blocoI == 27 || matriz[blocoI + 1][blocoJ] != null;
 
-                    boolean colisaoTopo = !topBloq && tTri.contains(objeto.getX(), objeto.getY()) && objeto.getySpeed() < 0;
-                    boolean colisaoBot = !botBloq && bTri.contains(objeto.getX(), objeto.getY()) && objeto.getySpeed() > 0;
-                    boolean colisaoEsquerda = !esqBloq && lTri.contains(objeto.getX(), objeto.getY()) && objeto.getxSpeed() > 0;
-                    boolean colisaoDireita = !dirBloq && rTri.contains(objeto.getX(), objeto.getY()) && objeto.getxSpeed() < 0;
+                    boolean colisaoTopo =  tTri.contains(objeto.getX(), objeto.getY()) && objeto.getySpeed() < 0;
+                    boolean colisaoBot = bTri.contains(objeto.getX(), objeto.getY()) && objeto.getySpeed() > 0;
+                    boolean colisaoEsquerda = lTri.contains(objeto.getX(), objeto.getY()) && objeto.getxSpeed() > 0;
+                    boolean colisaoDireita = rTri.contains(objeto.getX(), objeto.getY()) && objeto.getxSpeed() < 0;
 
 
                     if (colisaoTopo || colisaoBot) {
@@ -145,7 +145,7 @@ public class MatrizBlocos implements Colidivel<Integer, Bola> {
                             matriz[i][j] = null;
                             blocosQuebrados++;
                         }
-                        objeto.incVelocidade(5);
+                        objeto.incVelocidade(2);
                     }
                 }
             }
