@@ -9,6 +9,6 @@
 
 ### **LibGDX** 
 	LibGDX é um framework cross-plataforma de desenvolvimento de jogos em Java baseado no OpenGl.
-* [**Documentação**] (https://libgdx.com/wiki/)
+* [**Documentação**](https://libgdx.com/wiki/)
 
 
