@@ -23,10 +23,20 @@ public class Player {
 
         playerData = Gdx.files.local("player.dat");
 
+        if (!playerData.exists() || Objects.equals(playerData.readString(), "")) {
+            playerData.writeString("0", false);
+            highscore = 0;
+        } else {
+            highscore = Integer.parseInt(playerData.readString());
+        }
+
         getHighscore();
     }
 
     public void drawHighscore(int x, int y, SpriteBatch batch, BitmapFont font) {
+
+        getHighscore();
+
         String highscoreFormat = String.valueOf(highscore);
         while (highscoreFormat.length() < 6) {
             highscoreFormat = "0".concat(highscoreFormat);

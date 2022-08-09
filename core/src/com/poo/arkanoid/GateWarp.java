@@ -10,9 +10,6 @@ public class GateWarp extends Gate implements Colidivel<Boolean, Vaus> {
 
     public GateWarp(float x, float y, boolean espelhado, int rotacao, SpriteBatch batch) {
         super(x, y, espelhado, rotacao, batch);
-        setAnimacao(new Animacao(new Texture("Gates/wall-warp-spritesheet.png"), 1, 2, 1f));
-        getAnimacao().ativarForward();
-
         warpStateTime = 0f;
     }
 
@@ -27,6 +24,8 @@ public class GateWarp extends Gate implements Colidivel<Boolean, Vaus> {
                 getBatch().draw(getTextura(), getX() - getWidth() / 2, getY() - getHeight() / 2, getWidth() / 2, getHeight() / 2, getWidth(), getHeight(), 1, 1, getRotacao(), 0, 0, (int) getWidth(), (int) getHeight(), isEspelhar(), false);
                 break;
             case ABERTA:
+                setAnimacao(new Animacao(new Texture("Gates/wall-warp-spritesheet.png"), 1, 2, 1f));
+                getAnimacao().ativarForward();
                 warpStateTime += Gdx.graphics.getDeltaTime();
                 TextureRegion currentFrame = getAnimacao().getAtiva().getKeyFrame(warpStateTime, true);
                 getBatch().draw(currentFrame, isEspelhar() ? getX() + getWidth() / 2 : getX() - getWidth() / 2, getY() - getHeight() / 2, getWidth() / 2, getHeight() / 2, isEspelhar() ? -getWidth() : getWidth(), getHeight(), 1, 1, getRotacao());

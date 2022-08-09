@@ -70,8 +70,8 @@ public class Bola extends GameObject {
     }
 
     public void setVelocidade(int velocidade) {
-        double cosTeta = xSpeed / velocidade;
-        double sinTeta = ySpeed / velocidade;
+        double cosTeta = xSpeed / this.velocidade;
+        double sinTeta = ySpeed / this.velocidade;
 
         xSpeed = (float) (velocidade * cosTeta);
         ySpeed = (float) (velocidade * sinTeta);
@@ -79,14 +79,14 @@ public class Bola extends GameObject {
         this.velocidade = velocidade;
     }
 
-    public void setAngulo(float angulo) {
-        xSpeed = (float) (velocidade * Math.cos(angulo));
-        ySpeed = (float) (velocidade * Math.sin(angulo));
-    }
-
     public float getAngulo() {
         double cosTeta = xSpeed / velocidade;
         return (float) Math.acos(cosTeta);
+    }
+
+    public void setAngulo(float angulo) {
+        xSpeed = (float) (velocidade * Math.cos(angulo));
+        ySpeed = (float) (velocidade * Math.sin(angulo));
     }
 
     public void incVelocidade(int valor) {

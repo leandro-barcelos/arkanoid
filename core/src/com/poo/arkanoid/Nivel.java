@@ -11,18 +11,18 @@ public class Nivel {
     private final Gate gateTl;
     private final Gate gateTr;
     private final GateWarp gateWarp;
-    private Bola []bolas;
     private final Parede parede;
     private final int levelNum;
     private final SpriteBatch batch;
     private final int windowWidth;
     private final int windowHeight;
+    private final Sound poderSfx;
+    private Bola[] bolas;
     private Poder poder;
     private MatrizBlocos blocosNivel;
     private Texture background;
     private boolean readyDone;
     private float readyTime;
-    private final Sound poderSfx;
 
     public Nivel(SpriteBatch batch, int windowWidth, int windowHeight, int levelNum) {
         this.levelNum = levelNum;
@@ -86,7 +86,7 @@ public class Nivel {
         blocosNivel.draw();
 
         if (!readyDone) {
-            font.draw(batch, "READY", (float) ((parede.getLimXEsq() + parede.getLimXDir()) / 2 - 120), 67);
+            font.draw(batch, "READY", (float) ((parede.getLimXEsq() + parede.getLimXDir()) / 2) - 64, 67);
             readyTime += Gdx.graphics.getDeltaTime();
 
             if (readyTime >= 1) {
@@ -100,7 +100,7 @@ public class Nivel {
                 || (bolas[2] != null && !bolas[2].perdeu()))) {
 
             vaus.draw();
-            for (Bola i: bolas)
+            for (Bola i : bolas)
                 if (i != null)
                     i.draw();
         }
@@ -117,10 +117,10 @@ public class Nivel {
 
     public void moverObjetos() {
         if (((bolas[0] != null && !bolas[0].perdeu())
-         || (bolas[1] != null && !bolas[1].perdeu())
-         || (bolas[2] != null && !bolas[2].perdeu())) && readyDone) {
+                || (bolas[1] != null && !bolas[1].perdeu())
+                || (bolas[2] != null && !bolas[2].perdeu())) && readyDone) {
 
-            for (Bola i: bolas)
+            for (Bola i : bolas)
                 if (i != null)
                     i.mover();
 
@@ -178,9 +178,9 @@ public class Nivel {
             if (poder.colisao(vaus)) {
                 if (poder instanceof PoderVaus) {
                     ((PoderVaus) poder).ativar(vaus);
-                } else  if (poder instanceof PoderBola){
+                } else if (poder instanceof PoderBola) {
                     poderSfx.play(0.5f);
-                    for (Bola i: bolas) {
+                    for (Bola i : bolas) {
                         if (i != null)
                             ((PoderBola) poder).ativar(i);
                     }
@@ -211,13 +211,13 @@ public class Nivel {
                             }
                     }
                 } else if (poder instanceof PoderGate) {
-                    ((PoderGate)poder).ativar(gateWarp, vaus);
+                    ((PoderGate) poder).ativar(gateWarp, vaus);
                 } else if (poder instanceof PoderPlayer) {
                     poderSfx.play(0.5f);
                     ((PoderPlayer) poder).ativar(player);
                 }
 
-                if (!vaus.getAnimationActive())
+                if (!vaus.getAnimationActive() && !gateWarp.getAnimationActive())
                     poder = null;
             }
         }
@@ -229,8 +229,8 @@ public class Nivel {
 
     public boolean checarDerrota(Player player) {
         if ((bolas[0] == null || bolas[0].perdeu())
-         && (bolas[1] == null || bolas[1].perdeu())
-         && (bolas[2] == null || bolas[2].perdeu())) {
+                && (bolas[1] == null || bolas[1].perdeu())
+                && (bolas[2] == null || bolas[2].perdeu())) {
             vaus.destroy();
             if (!vaus.getAnimationActive()) {
                 player.decVidas();
@@ -251,6 +251,8 @@ public class Nivel {
         vaus.setX((float) (parede.getLimXEsq() + parede.getLimXDir()) / 2);
         vaus.setY(57);
         vaus.setHabilidade(Vaus.vausHabilidade.NORMAL);
+
+        gateWarp.setEstado(Gate.estadoParede.FECHADA);
 
         bolas = new Bola[3];
         bolas[0] = new Bola(0, 66, batch);

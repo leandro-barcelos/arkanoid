@@ -12,13 +12,14 @@ public class Vaus extends Animavel implements Colidivel<Boolean, Bola> {
     private final Texture imgNormal, imgLazer, imgLarge;
     private final Animacao toLargeAnimation, toLazerAnimation, destructionAnimation;
     private final ArrayList<Laser[]> lasers;
-    private vausHabilidade habilidade;
-    private float cadenciaLaser;
-    private boolean changeModeSound = false;
     private final Sound laser;
     private final Sound hit;
     private final Sound mode;
     private final Sound destruir;
+    private vausHabilidade habilidade;
+    private float cadenciaLaser;
+    private boolean changeModeSound = false;
+
     public Vaus(int x, int y, SpriteBatch batch) {
         super(x, y, 64, 14, batch);
 

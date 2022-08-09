@@ -116,7 +116,7 @@ public class MatrizBlocos implements Colidivel<Integer, Bola> {
                             new int[]{coordBl[1], coordBr[1], coordCenter[1]}, 3);
 
 
-                    boolean colisaoTopo =  tTri.contains(objeto.getX(), objeto.getY()) && objeto.getySpeed() < 0;
+                    boolean colisaoTopo = tTri.contains(objeto.getX(), objeto.getY()) && objeto.getySpeed() < 0;
                     boolean colisaoBot = bTri.contains(objeto.getX(), objeto.getY()) && objeto.getySpeed() > 0;
                     boolean colisaoEsquerda = lTri.contains(objeto.getX(), objeto.getY()) && objeto.getxSpeed() > 0;
                     boolean colisaoDireita = rTri.contains(objeto.getX(), objeto.getY()) && objeto.getxSpeed() < 0;
@@ -153,59 +153,52 @@ public class MatrizBlocos implements Colidivel<Integer, Bola> {
     }
 
     public void spawnarPoder(Nivel nivel) {
-        int randPoder = rand.nextInt(100);
+        int randPoder = rand.nextInt(99);
 
         if (blocosQuebrados - 1 >= randNBlocos) {
-            if (randPoder <=  9) {
+            if (randPoder <= 9) {
                 if (!nivel.getVaus().getAnimationActive() && nivel.getPoder() == null) {
                     nivel.setPoder(new PoderLazer(ultimoQuebrado.getX(), ultimoQuebrado.getY(), nivel.getBatch()));
                     randNBlocos = rand.nextInt(6);
                     blocosQuebrados = 0;
                 }
-            }
-            else if (randPoder <=  24) {
+            } else if (randPoder <= 24) {
                 if (!nivel.getVaus().getAnimationActive() && nivel.getPoder() == null) {
                     nivel.setPoder(new PoderEnlarge(ultimoQuebrado.getX(), ultimoQuebrado.getY(), nivel.getBatch()));
                     randNBlocos = rand.nextInt(6);
                     blocosQuebrados = 0;
                 }
-            }
-            else if (randPoder <=  39) {
+            } else if (randPoder <= 39) {
                 if (nivel.getPoder() == null) {
                     nivel.setPoder(new PoderCatch(ultimoQuebrado.getX(), ultimoQuebrado.getY(), nivel.getBatch()));
                     randNBlocos = rand.nextInt(6);
                     blocosQuebrados = 0;
                 }
-            }
-            else if (randPoder <=  59) {
+            } else if (randPoder <= 59) {
                 if (nivel.getPoder() == null) {
                     nivel.setPoder(new PoderSlow(ultimoQuebrado.getX(), ultimoQuebrado.getY(), nivel.getBatch()));
                     randNBlocos = rand.nextInt(6);
                     blocosQuebrados = 0;
                 }
-            }
-            else if (randPoder <=  64) {
+            } else if (randPoder <= 64) {
                 if (!nivel.getGateWarp().getAnimationActive() && nivel.getPoder() == null) {
                     nivel.setPoder(new PoderBreak(ultimoQuebrado.getX(), ultimoQuebrado.getY(), nivel.getBatch()));
                     randNBlocos = rand.nextInt(6);
                     blocosQuebrados = 0;
                 }
-            }
-            else if (randPoder <=  79) {
+            } else if (randPoder <= 79) {
                 if (nivel.getPoder() == null) {
                     nivel.setPoder(new PoderDisruption(ultimoQuebrado.getX(), ultimoQuebrado.getY(), nivel.getBatch()));
                     randNBlocos = rand.nextInt(6);
                     blocosQuebrados = 0;
                 }
-            }
-            else {
+            } else {
                 if (nivel.getPoder() == null) {
                     nivel.setPoder(new PoderPlayer(ultimoQuebrado.getX(), ultimoQuebrado.getY(), nivel.getBatch()));
                     randNBlocos = rand.nextInt(6);
                     blocosQuebrados = 0;
                 }
             }
-
         }
     }
 

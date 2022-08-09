@@ -11,14 +11,15 @@ import com.badlogic.gdx.utils.ScreenUtils;
 
 public class Arkanoid extends ApplicationAdapter {
 
-    int width, height;
-    SpriteBatch batch;
-    OrthographicCamera camera;
-    BitmapFont gameFont;
-    Nivel nivel;
-    TelaInicial startScreen;
-    Player player;
-    boolean startGame;
+    private int width;
+    private int height;
+    private SpriteBatch batch;
+    private OrthographicCamera camera;
+    private BitmapFont gameFont;
+    private Nivel nivel;
+    private TelaInicial startScreen;
+    private Player player;
+    private boolean startGame;
 
     @Override
     public void create() {
@@ -65,13 +66,15 @@ public class Arkanoid extends ApplicationAdapter {
                 nivel.draw(gameFont, player);
                 nivel.moverObjetos();
 
-                if (nivel.getBolas()[0] != null)
-                    nivel.getBolas()[0].setGrudar(!Gdx.input.isKeyPressed(Input.Keys.SPACE) && nivel.getBolas()[0].isGrudar());
+                for (Bola i : nivel.getBolas()) {
+                    if (i != null)
+                        i.setGrudar(!Gdx.input.isKeyPressed(Input.Keys.SPACE) && i.isGrudar());
+                }
 
                 if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) nivel.getVaus().atirar();
 
                 if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
-                    for (Bola i: nivel.getBolas())
+                    for (Bola i : nivel.getBolas())
                         if (i != null)
                             i.setGrudar(false);
                 }

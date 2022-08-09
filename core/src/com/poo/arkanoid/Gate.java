@@ -10,6 +10,7 @@ public class Gate extends Animavel {
     private final boolean espelhar;
     private final int rotacao;
     private estadoParede estado;
+
     public Gate(float x, float y, boolean espelhar, int rotacao, SpriteBatch batch) {
         super(x, y, 16, 46, batch);
 
@@ -20,8 +21,6 @@ public class Gate extends Animavel {
         imgFechada = new Texture("Gates/wall-close.png");
         imgAberta = new Texture("Gates/wall-open.png");
 
-        // CARREGAR ANIMACOES
-        setAnimacao(new Animacao(new Texture("Gates/wall-open-spritesheet.png"), 1, 8, 1f));
 
         estado = estadoParede.FECHADA;
 
@@ -48,6 +47,8 @@ public class Gate extends Animavel {
     public void mudarEstado(estadoParede paraEstado) {
         if (estado == paraEstado) return;
 
+        setAnimacao(new Animacao(new Texture("Gates/wall-open-spritesheet.png"), 1, 8, 1f));
+
         if (paraEstado == estadoParede.FECHADA) {
             getAnimacao().ativarBackward();
         } else {
@@ -73,6 +74,10 @@ public class Gate extends Animavel {
 
     public estadoParede getEstado() {
         return estado;
+    }
+
+    public void setEstado(estadoParede estado) {
+        this.estado = estado;
     }
 
     public Texture getImgFechada() {
