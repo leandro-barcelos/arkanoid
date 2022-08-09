@@ -1,6 +1,7 @@
 package com.poo.arkanoid;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
@@ -14,6 +15,7 @@ public class MatrizBlocos implements Colidivel<Integer, Bola> {
     private int blocosQuebrados;
     private int randNBlocos;
     private Bloco ultimoQuebrado;
+    private Sound hitSound;
 
     public MatrizBlocos(int levelNum, int linhas, int colunas, int minX, SpriteBatch batch) {
         matriz = new Bloco[linhas][colunas];
@@ -74,6 +76,8 @@ public class MatrizBlocos implements Colidivel<Integer, Bola> {
         rand = new Random();
 
         randNBlocos = rand.nextInt(6);
+
+
     }
 
 
@@ -130,6 +134,8 @@ public class MatrizBlocos implements Colidivel<Integer, Bola> {
                     }
 
                     if (colisaoTopo || colisaoBot || colisaoEsquerda || colisaoDireita) {
+                        hitSound = Gdx.audio.newSound(Gdx.files.internal(matriz[i][j].getCor().pathSfx));
+                        hitSound.play(0.5f);
                         matriz[i][j].decDurabilidade();
                         if (matriz[i][j].isQuebrado()) {
                             pontos += matriz[i][j].getPontos();
@@ -213,5 +219,9 @@ public class MatrizBlocos implements Colidivel<Integer, Bola> {
 
     public Bloco[][] getMatriz() {
         return matriz;
+    }
+
+    public Sound getHitSound() {
+        return hitSound;
     }
 }

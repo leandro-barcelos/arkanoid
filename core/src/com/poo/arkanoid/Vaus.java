@@ -2,6 +2,7 @@ package com.poo.arkanoid;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
@@ -13,6 +14,11 @@ public class Vaus extends Animavel implements Colidivel<Boolean, Bola> {
     private final ArrayList<Laser[]> lasers;
     private vausHabilidade habilidade;
     private float cadenciaLaser;
+    private boolean changeModeSound = false;
+    private final Sound laser;
+    private final Sound hit;
+    private final Sound mode;
+    private final Sound destruir;
     public Vaus(int x, int y, SpriteBatch batch) {
         super(x, y, 64, 14, batch);
 
@@ -32,6 +38,11 @@ public class Vaus extends Animavel implements Colidivel<Boolean, Bola> {
         lasers = new ArrayList<>();
 
         cadenciaLaser = 1f;
+
+        laser = Gdx.audio.newSound(Gdx.files.internal("sfx/Laser.wav"));
+        mode = Gdx.audio.newSound(Gdx.files.internal("sfx/Enlarge.wav"));
+        hit = Gdx.audio.newSound(Gdx.files.internal("sfx/ColisaoBarra.wav"));
+        destruir = Gdx.audio.newSound(Gdx.files.internal("sfx/VausDestruir.wav"));
     }
 
     public vausHabilidade getHabilidade() {
@@ -50,6 +61,8 @@ public class Vaus extends Animavel implements Colidivel<Boolean, Bola> {
             return;
         }
 
+
+        laser.play(0.5f);
 
         Laser[] novo = new Laser[2];
         novo[0] = new Laser(getX() - 27, getY() + getHeight() / 2, getBatch());
@@ -78,6 +91,12 @@ public class Vaus extends Animavel implements Colidivel<Boolean, Bola> {
     public void changeMode(vausHabilidade toMode) {
         if (habilidade == toMode) return;
 
+
+        if (!changeModeSound) {
+            mode.play(0.5f);
+            changeModeSound = true;
+        }
+
         if (toMode != vausHabilidade.NORMAL && habilidade != vausHabilidade.NORMAL) {
             changeMode(vausHabilidade.NORMAL);
             return;
@@ -103,7 +122,10 @@ public class Vaus extends Animavel implements Colidivel<Boolean, Bola> {
                 break;
         }
 
-        if (rodarAnimacao()) habilidade = toMode;
+        if (rodarAnimacao()) {
+            habilidade = toMode;
+            changeModeSound = false;
+        }
     }
 
     @Override
@@ -134,6 +156,7 @@ public class Vaus extends Animavel implements Colidivel<Boolean, Bola> {
         colidiu = (objeto.getY() - 1 - (objeto.getHeight() / 2) <= (getY() + getHeight() / 2) && objeto.getY() + objeto.getHeight() / 2 >= (getY() - getHeight() / 2))
                 && (objeto.getX() >= getX() - (getWidth() / 2) && objeto.getX() <= getX() + (getWidth() / 2));
         if (colidiu && !objeto.isGrudar()) {
+            hit.play(0.5f);
             if (objeto.getVelocidade() == 0) objeto.setVelocidade(300);
             else if (objeto.getVelocidade() < 500) objeto.setVelocidade(objeto.getVelocidade() + 2);
 
@@ -162,7 +185,12 @@ public class Vaus extends Animavel implements Colidivel<Boolean, Bola> {
         setAnimacao(destructionAnimation);
         getAnimacao().ativarForward();
 
-        rodarAnimacao();
+        if (!changeModeSound) {
+            destruir.play(0.5f);
+            changeModeSound = true;
+        }
+
+        if (rodarAnimacao()) changeModeSound = false;
     }
 
     @Override
@@ -170,6 +198,10 @@ public class Vaus extends Animavel implements Colidivel<Boolean, Bola> {
         imgNormal.dispose();
         imgLazer.dispose();
         imgLarge.dispose();
+        hit.dispose();
+        laser.dispose();
+        mode.dispose();
+        destruir.dispose();
     }
 
     public ArrayList<Laser[]> getLasers() {

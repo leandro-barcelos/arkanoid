@@ -1,6 +1,7 @@
 package com.poo.arkanoid;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -21,6 +22,7 @@ public class Nivel {
     private Texture background;
     private boolean readyDone;
     private float readyTime;
+    private final Sound poderSfx;
 
     public Nivel(SpriteBatch batch, int windowWidth, int windowHeight, int levelNum) {
         this.levelNum = levelNum;
@@ -60,6 +62,8 @@ public class Nivel {
         readyTime = 0;
         readyDone = false;
         poder = null;
+
+        poderSfx = Gdx.audio.newSound(Gdx.files.internal("sfx/Poder.wav"));
     }
 
     public void draw(BitmapFont font, Player player) {
@@ -131,14 +135,16 @@ public class Nivel {
     }
 
     public void colisao(Player player) {
-        for (Bola i: bolas)
-            if (i != null) {
-                if (vaus.colisao(i) && i.isGrudar())
-                    i.grudarBarra(vaus);
+        for (int i = 0; i < 3; i++)
+            if (bolas[i] != null) {
+                if (vaus.colisao(bolas[i]) && bolas[i].isGrudar())
+                    bolas[i].grudarBarra(vaus);
 
-                parede.colisao(i);
+                parede.colisao(bolas[i]);
 
-                player.setScore(player.getScore() + blocosNivel.colisao(i));
+                player.setScore(player.getScore() + blocosNivel.colisao(bolas[i]));
+
+                if (bolas[i].perdeu()) bolas[i] = null;
             }
 
         if (gateWarp.colisao(vaus)) {
@@ -173,11 +179,13 @@ public class Nivel {
                 if (poder instanceof PoderVaus) {
                     ((PoderVaus) poder).ativar(vaus);
                 } else  if (poder instanceof PoderBola){
+                    poderSfx.play(0.5f);
                     for (Bola i: bolas) {
                         if (i != null)
                             ((PoderBola) poder).ativar(i);
                     }
                 } else if (poder instanceof PoderDisruption) {
+                    poderSfx.play(0.5f);
                     if (!(bolas[1] != null && bolas[2] != null ||
                             bolas[0] != null && bolas[2] != null ||
                             bolas[0] != null && bolas[1] != null)) {
@@ -201,13 +209,13 @@ public class Nivel {
                                 bolas[i2].setVelocidade(bolas[i].getVelocidade());
                                 bolas[i2].setAngulo(bolas[i].getAngulo() - 0.785398f);
                             }
-
-
                     }
                 } else if (poder instanceof PoderGate) {
                     ((PoderGate)poder).ativar(gateWarp, vaus);
-                } else if (poder instanceof PoderPlayer)
-                    ((PoderPlayer)poder).ativar(player);
+                } else if (poder instanceof PoderPlayer) {
+                    poderSfx.play(0.5f);
+                    ((PoderPlayer) poder).ativar(player);
+                }
 
                 if (!vaus.getAnimationActive())
                     poder = null;
@@ -257,6 +265,9 @@ public class Nivel {
     public void dispose() {
         vaus.dispose();
         gateTl.dispose();
+        blocosNivel.getHitSound().dispose();
+        poderSfx.dispose();
+        parede.getHit().dispose();
     }
 
     public int getLevelNum() {
