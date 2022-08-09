@@ -10,7 +10,7 @@ public class Nivel {
     private final Gate gateTl;
     private final Gate gateTr;
     private final GateWarp gateWarp;
-    private final Bola bola;
+    private Bola []bolas;
     private final Parede parede;
     private final int levelNum;
     private final SpriteBatch batch;
@@ -30,15 +30,17 @@ public class Nivel {
 
         parede = new Parede(32, 384, 449, 0);
         vaus = new Vaus((parede.getLimXEsq() + parede.getLimXDir()) / 2, 57, batch);
-        bola = new Bola(0, 66, batch);
-        bola.grudarBarra(vaus);
-        bola.setGrudar(true);
+
+        bolas = new Bola[3];
+        bolas[0] = new Bola(0, 66, batch);
+        bolas[0].grudarBarra(vaus);
+        bolas[0].setGrudar(true);
 
         blocosNivel = new MatrizBlocos(levelNum, 28, 11, parede.getLimXEsq(), batch);
 
         gateTl = new Gate(135, 456, true, 90, batch);
         gateTr = new Gate(283, 456, true, 90, batch);
-        gateWarp = new GateWarp(392, 57, false, 0, batch);
+        gateWarp = new GateWarp(392, 57, true, 0, batch);
 
         switch ((levelNum - 1) % 4) {
             case 0:
@@ -89,9 +91,14 @@ public class Nivel {
             }
         }
 
-        if (readyDone && !bola.perdeu()) {
+        if (readyDone && ((bolas[0] != null && !bolas[0].perdeu())
+                || (bolas[1] != null && !bolas[1].perdeu())
+                || (bolas[2] != null && !bolas[2].perdeu()))) {
+
             vaus.draw();
-            bola.draw();
+            for (Bola i: bolas)
+                if (i != null)
+                    i.draw();
         }
 
         if (poder != null && !poder.colisao(vaus))
@@ -105,8 +112,14 @@ public class Nivel {
     }
 
     public void moverObjetos() {
-        if (!bola.perdeu() && readyDone) {
-            bola.mover();
+        if (((bolas[0] != null && !bolas[0].perdeu())
+         || (bolas[1] != null && !bolas[1].perdeu())
+         || (bolas[2] != null && !bolas[2].perdeu())) && readyDone) {
+
+            for (Bola i: bolas)
+                if (i != null)
+                    i.mover();
+
             vaus.Mover(parede);
             if (poder != null && !poder.colisao(vaus)) {
                 poder.cair();
@@ -118,12 +131,19 @@ public class Nivel {
     }
 
     public void colisao(Player player) {
-        if (vaus.colisao(bola) && bola.isGrudar())
-            bola.grudarBarra(vaus);
+        for (Bola i: bolas)
+            if (i != null) {
+                if (vaus.colisao(i) && i.isGrudar())
+                    i.grudarBarra(vaus);
 
-        parede.colisao(bola);
+                parede.colisao(i);
 
-        player.setScore(player.getScore() + blocosNivel.colisao(bola));
+                player.setScore(player.getScore() + blocosNivel.colisao(i));
+            }
+
+        if (gateWarp.colisao(vaus)) {
+            player.setScore(player.getScore() + 10000);
+        }
 
         for (int i = 0; i < vaus.getLasers().size(); i++) {
             int pontosLaser;
@@ -152,9 +172,42 @@ public class Nivel {
             if (poder.colisao(vaus)) {
                 if (poder instanceof PoderVaus) {
                     ((PoderVaus) poder).ativar(vaus);
-                } else {
-                    ((PoderBola) poder).ativar(bola);
-                }
+                } else  if (poder instanceof PoderBola){
+                    for (Bola i: bolas) {
+                        if (i != null)
+                            ((PoderBola) poder).ativar(i);
+                    }
+                } else if (poder instanceof PoderDisruption) {
+                    if (!(bolas[1] != null && bolas[2] != null ||
+                            bolas[0] != null && bolas[2] != null ||
+                            bolas[0] != null && bolas[1] != null)) {
+                        for (int i = 0; i < 3; i++)
+                            if (bolas[i] != null) {
+                                int i1 = i - 1;
+                                int i2 = i + 1;
+
+                                if (i1 == -1) i1 = 2;
+                                if (i2 == 3) i2 = 0;
+
+                                bolas[i1] = new Bola(bolas[i].getX(), bolas[i].getY(), batch);
+                                bolas[i1].setxSpeed(bolas[i].getxSpeed());
+                                bolas[i1].setySpeed(bolas[i].getySpeed());
+                                bolas[i1].setVelocidade(bolas[i].getVelocidade());
+                                bolas[i1].setAngulo(bolas[i].getAngulo() + 0.785398f);
+
+                                bolas[i2] = new Bola(bolas[i].getX(), bolas[i].getY(), batch);
+                                bolas[i2].setxSpeed(bolas[i].getxSpeed());
+                                bolas[i2].setySpeed(bolas[i].getySpeed());
+                                bolas[i2].setVelocidade(bolas[i].getVelocidade());
+                                bolas[i2].setAngulo(bolas[i].getAngulo() - 0.785398f);
+                            }
+
+
+                    }
+                } else if (poder instanceof PoderGate) {
+                    ((PoderGate)poder).ativar(gateWarp, vaus);
+                } else if (poder instanceof PoderPlayer)
+                    ((PoderPlayer)poder).ativar(player);
 
                 if (!vaus.getAnimationActive())
                     poder = null;
@@ -167,7 +220,9 @@ public class Nivel {
     }
 
     public boolean checarDerrota(Player player) {
-        if (bola.perdeu()) {
+        if ((bolas[0] == null || bolas[0].perdeu())
+         && (bolas[1] == null || bolas[1].perdeu())
+         && (bolas[2] == null || bolas[2].perdeu())) {
             vaus.destroy();
             if (!vaus.getAnimationActive()) {
                 player.decVidas();
@@ -189,10 +244,11 @@ public class Nivel {
         vaus.setY(57);
         vaus.setHabilidade(Vaus.vausHabilidade.NORMAL);
 
-        bola.setVelocidade(0);
+        bolas = new Bola[3];
+        bolas[0] = new Bola(0, 66, batch);
+        bolas[0].grudarBarra(vaus);
+        bolas[0].setGrudar(true);
 
-        bola.setGrudar(true);
-        bola.grudarBarra(vaus);
         poder = null;
 
         readyDone = true;
@@ -211,8 +267,8 @@ public class Nivel {
         return vaus;
     }
 
-    public Bola getBola() {
-        return bola;
+    public Bola[] getBolas() {
+        return bolas;
     }
 
     public Poder getPoder() {
@@ -229,5 +285,9 @@ public class Nivel {
 
     public SpriteBatch getBatch() {
         return batch;
+    }
+
+    public GateWarp getGateWarp() {
+        return gateWarp;
     }
 }

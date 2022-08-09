@@ -4,8 +4,8 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 public class PoderLazer extends Poder implements PoderVaus {
-    public PoderLazer(float x, float y, float width, float height, SpriteBatch batch) {
-        super(x, y, width, height, new Texture("Powerups/power-lazer-spritesheet.png"), batch);
+    public PoderLazer(float x, float y, SpriteBatch batch) {
+        super(x, y, new Texture("Powerups/power-lazer-spritesheet.png"), batch);
     }
 
     @Override

@@ -73,7 +73,7 @@ public class MatrizBlocos implements Colidivel<Integer, Bola> {
 
         rand = new Random();
 
-        randNBlocos = rand.nextInt(11);
+        randNBlocos = rand.nextInt(6);
     }
 
 
@@ -111,14 +111,6 @@ public class MatrizBlocos implements Colidivel<Integer, Bola> {
                     Polygon bTri = new Polygon(new int[]{coordBl[0], coordBr[0], coordCenter[0]},
                             new int[]{coordBl[1], coordBr[1], coordCenter[1]}, 3);
 
-                    int blocoI = (int) (26 - matriz[i][j].getY() / 16);
-                    int blocoJ = (int) (matriz[i][j].getX() / 32 - 1);
-
-//                    boolean esqBloq, topBloq , dirBloq, botBloq;
-//                    esqBloq = blocoJ == 0 || matriz[blocoI][blocoJ - 1] != null;
-//                    topBloq = blocoI == 0 || matriz[blocoI - 1][blocoJ] != null;
-//                    dirBloq = blocoJ == 10 || matriz[blocoI][blocoJ + 1] != null;
-//                    botBloq = blocoI == 27 || matriz[blocoI + 1][blocoJ] != null;
 
                     boolean colisaoTopo =  tTri.contains(objeto.getX(), objeto.getY()) && objeto.getySpeed() < 0;
                     boolean colisaoBot = bTri.contains(objeto.getX(), objeto.getY()) && objeto.getySpeed() > 0;
@@ -155,12 +147,59 @@ public class MatrizBlocos implements Colidivel<Integer, Bola> {
     }
 
     public void spawnarPoder(Nivel nivel) {
+        int randPoder = rand.nextInt(100);
+
         if (blocosQuebrados - 1 >= randNBlocos) {
-            if (!nivel.getVaus().getAnimationActive() && nivel.getPoder() == null) {
-                nivel.setPoder(new PoderLazer(ultimoQuebrado.getX(), ultimoQuebrado.getY(), 32, 14, nivel.getBatch()));
-                randNBlocos = rand.nextInt(11);
-                blocosQuebrados = 0;
+            if (randPoder <=  9) {
+                if (!nivel.getVaus().getAnimationActive() && nivel.getPoder() == null) {
+                    nivel.setPoder(new PoderLazer(ultimoQuebrado.getX(), ultimoQuebrado.getY(), nivel.getBatch()));
+                    randNBlocos = rand.nextInt(6);
+                    blocosQuebrados = 0;
+                }
             }
+            else if (randPoder <=  24) {
+                if (!nivel.getVaus().getAnimationActive() && nivel.getPoder() == null) {
+                    nivel.setPoder(new PoderEnlarge(ultimoQuebrado.getX(), ultimoQuebrado.getY(), nivel.getBatch()));
+                    randNBlocos = rand.nextInt(6);
+                    blocosQuebrados = 0;
+                }
+            }
+            else if (randPoder <=  39) {
+                if (nivel.getPoder() == null) {
+                    nivel.setPoder(new PoderCatch(ultimoQuebrado.getX(), ultimoQuebrado.getY(), nivel.getBatch()));
+                    randNBlocos = rand.nextInt(6);
+                    blocosQuebrados = 0;
+                }
+            }
+            else if (randPoder <=  59) {
+                if (nivel.getPoder() == null) {
+                    nivel.setPoder(new PoderSlow(ultimoQuebrado.getX(), ultimoQuebrado.getY(), nivel.getBatch()));
+                    randNBlocos = rand.nextInt(6);
+                    blocosQuebrados = 0;
+                }
+            }
+            else if (randPoder <=  64) {
+                if (!nivel.getGateWarp().getAnimationActive() && nivel.getPoder() == null) {
+                    nivel.setPoder(new PoderBreak(ultimoQuebrado.getX(), ultimoQuebrado.getY(), nivel.getBatch()));
+                    randNBlocos = rand.nextInt(6);
+                    blocosQuebrados = 0;
+                }
+            }
+            else if (randPoder <=  79) {
+                if (nivel.getPoder() == null) {
+                    nivel.setPoder(new PoderDisruption(ultimoQuebrado.getX(), ultimoQuebrado.getY(), nivel.getBatch()));
+                    randNBlocos = rand.nextInt(6);
+                    blocosQuebrados = 0;
+                }
+            }
+            else {
+                if (nivel.getPoder() == null) {
+                    nivel.setPoder(new PoderPlayer(ultimoQuebrado.getX(), ultimoQuebrado.getY(), nivel.getBatch()));
+                    randNBlocos = rand.nextInt(6);
+                    blocosQuebrados = 0;
+                }
+            }
+
         }
     }
 

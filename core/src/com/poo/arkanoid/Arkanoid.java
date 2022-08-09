@@ -65,11 +65,15 @@ public class Arkanoid extends ApplicationAdapter {
                 nivel.draw(gameFont, player);
                 nivel.moverObjetos();
 
-                nivel.getBola().setGrudar(!Gdx.input.isKeyPressed(Input.Keys.SPACE) && nivel.getBola().isGrudar());
+                if (nivel.getBolas()[0] != null)
+                    nivel.getBolas()[0].setGrudar(!Gdx.input.isKeyPressed(Input.Keys.SPACE) && nivel.getBolas()[0].isGrudar());
+
                 if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) nivel.getVaus().atirar();
 
                 if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
-                    nivel.getBola().setGrudar(false);
+                    for (Bola i: nivel.getBolas())
+                        if (i != null)
+                            i.setGrudar(false);
                 }
 
                 nivel.colisao(player);

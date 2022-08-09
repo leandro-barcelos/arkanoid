@@ -30,6 +30,9 @@ public class Bola extends GameObject {
     void grudarBarra(Vaus vaus) {
         setX(vaus.getX() + (vaus.getWidth() / 2) - 12);
         setY(vaus.getY() + (vaus.getHeight() / 2) + getHeight() / 2 + 1);
+
+        setxSpeed(0);
+        setySpeed(0);
     }
 
     public boolean perdeu() {
@@ -67,17 +70,36 @@ public class Bola extends GameObject {
     }
 
     public void setVelocidade(int velocidade) {
-        this.velocidade = velocidade;
-    }
-
-    public void incVelocidade(int valor) {
-        if (velocidade + valor >= 350)
-            return;
-
         double cosTeta = xSpeed / velocidade;
         double sinTeta = ySpeed / velocidade;
 
-        velocidade += valor;
+        xSpeed = (float) (velocidade * cosTeta);
+        ySpeed = (float) (velocidade * sinTeta);
+
+        this.velocidade = velocidade;
+    }
+
+    public void setAngulo(float angulo) {
+        xSpeed = (float) (velocidade * Math.cos(angulo));
+        ySpeed = (float) (velocidade * Math.sin(angulo));
+    }
+
+    public float getAngulo() {
+        double cosTeta = xSpeed / velocidade;
+        return (float) Math.acos(cosTeta);
+    }
+
+    public void incVelocidade(int valor) {
+        double cosTeta = xSpeed / velocidade;
+        double sinTeta = ySpeed / velocidade;
+
+        if (velocidade + valor >= 300 && velocidade + valor <= 50) {
+            if (valor < 0)
+                velocidade = 50;
+            else
+                velocidade = 300;
+        } else
+            velocidade += valor;
 
         xSpeed = (float) (velocidade * cosTeta);
         ySpeed = (float) (velocidade * sinTeta);
