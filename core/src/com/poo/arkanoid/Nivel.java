@@ -223,8 +223,12 @@ public class Nivel {
         }
     }
 
-    public boolean checarVitoria() {
+    public boolean checarPassarNivel() {
         return blocosNivel.isTudoQuebrado() || gateWarp.colisao(vaus);
+    }
+
+    public boolean checarVitoria(Player player) {
+        return player.getNivelAtual() > 10;
     }
 
     public boolean checarDerrota(Player player) {

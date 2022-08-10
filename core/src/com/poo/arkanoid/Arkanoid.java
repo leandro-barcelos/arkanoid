@@ -10,7 +10,6 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.ScreenUtils;
 
 public class Arkanoid extends ApplicationAdapter {
-
     private int width;
     private int height;
     private SpriteBatch batch;
@@ -85,9 +84,9 @@ public class Arkanoid extends ApplicationAdapter {
                 nivel.getBlocosNivel().spawnarPoder(nivel);
 
                 // GAME OVER
-                if (nivel.checarDerrota(player)) {
+                if (nivel.checarDerrota(player) || nivel.checarVitoria(player)) {
                     startGame = false;
-                } else if (nivel.checarVitoria()) {
+                } else if (nivel.checarPassarNivel()) {
                     player.incNivelAtual();
                 }
             }
