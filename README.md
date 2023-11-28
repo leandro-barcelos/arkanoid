@@ -1,9 +1,9 @@
 # Trabalho Final POO1
 
 ## Integrantes 
-* **Leandro Barcelos Ferreira**: 12021BCC010
-* **Anneslise Lima Carneiro**: 12021BCC032
-* **Marina Bagliano Silva**: 12021BCC039 
+* **Leandro Barcelos Ferreira**
+* **Anneslise Lima Carneiro**
+* **Marina Bagliano Silva**
 	
 ## Bibliotecas Usadas
 
